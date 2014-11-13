@@ -5,6 +5,8 @@ The Play Silhouette Angular Seed project shows how [Silhouette](https://github.c
 to create a SPA with AngularJS and Play scaffolded by [yeoman](https://github.com/tuplejump/play-yeoman). 
 It's a starting point which can be extended to fit your needs.
 
+**Warning:** This project is currently work in progress.
+
 ## Features
 
 * Sign Up
