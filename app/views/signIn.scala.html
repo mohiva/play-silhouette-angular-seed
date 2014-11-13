@@ -1,0 +1,44 @@
+@()
+
+@import forms.SignInForm._
+@implicitField = @{ helper.FieldConstructor(fields.constructor.f) }
+
+@defining(form) { signInForm =>
+    <div class="content-area" ng-controller="SignInCtrl">
+        <div class="jumbotron">
+            <h1>Sign In</h1>
+            <p>Sign in with your credentials</p>
+            <form name="form" id="signup-form" ng-submit="form.$valid && submit()" ng-model-options="{ updateOn: 'submit blur' }" novalidate>
+
+                <span class="error" ng-show="form.$submitted && form.identifier.$error.email">Please correct your email address!</span>
+                <span class="error" ng-show="form.$submitted && form.identifier.$error.required">The email address is required!</span>
+                <div class="input-group">
+                    <span class="input-group-addon glyphicon glyphicon-envelope"></span>
+                    @helper.inputText(signInForm("identifier"),
+                        'type -> "email",
+                        'placeholder -> "Email",
+                        'class -> "form-control",
+                        '_label -> "",
+                        'required -> "",
+                        'email -> "",
+                        Symbol("ng-model") -> "email"
+                    )
+                </div>
+                <span class="error" ng-show="form.$submitted && form.password.$error.required">The password is required!</span>
+                <div class="input-group">
+                    <span class="input-group-addon glyphicon glyphicon-warning-sign"></span>
+                    @helper.inputPassword(signInForm("password"),
+                        'placeholder -> "Password",
+                        'class -> "form-control",
+                        '_label -> "",
+                        'required -> "",
+                        Symbol("ng-model") -> "password"
+                    )
+                </div>
+                <span class="error" ng-show="form.$submitted && form.$error.forbidden">Your session has expired! Try to create a new Account!</span>
+                <button id="submit" type="submit" value="submit" class="btn btn-primary btn-block">Submit</button>
+                <span><br>Not a member? <a ui-sref="signup"> Sign up now </a></span>
+            </form>
+        </div>
+    </div>
+}

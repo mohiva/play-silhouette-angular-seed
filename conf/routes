@@ -1,0 +1,21 @@
+# Routes
+# This file defines all application routes (Higher priority routes first)
+# ~~~~
+
+GET         /                                com.tuplejump.playYeoman.Yeoman.index
+
+POST        /signup                          @controllers.SignUpController.signUp
+GET         /signin                          @controllers.ApplicationController.signIn
+GET         /signout                         @controllers.ApplicationController.signOut
+POST        /authenticate                    @controllers.CredentialsAuthController.authenticate
+
+GET         /views/home.html                 @controllers.ApplicationController.home
+
+# Dynamic part of the url
+GET         /views/$template<.+>.html        @controllers.ApplicationController.view(template)
+
+# Map static resources from the /public folder to the /assets URL path
+GET         /assets/*file                    controllers.Assets.at(path="/public", file)
+GET         /webjars/*file                   controllers.WebJarAssets.at(file)
+
+->          /                                yeoman.Routes

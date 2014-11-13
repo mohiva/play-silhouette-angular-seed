@@ -1,0 +1,12 @@
+@(user: models.User)
+
+<div class="jumbotron">
+    <p>Marvellous, you are now signed in!</p>
+
+    <div class="media">
+        <div class="media-body">
+            <h4 class="media-heading">Logged in as @user.firstName @user.lastName</h4>
+            @user.email
+        </div>
+    </div>
+</div>
