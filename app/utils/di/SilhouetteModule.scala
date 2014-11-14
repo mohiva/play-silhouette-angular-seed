@@ -4,7 +4,7 @@ import com.google.inject.{AbstractModule, Provides}
 import com.mohiva.play.silhouette.api.services.{AuthInfoService, AuthenticatorService}
 import com.mohiva.play.silhouette.api.util._
 import com.mohiva.play.silhouette.api.{Environment, EventBus}
-import com.mohiva.play.silhouette.impl.authenticators.{CookieAuthenticator, CookieAuthenticatorService, CookieAuthenticatorSettings}
+import com.mohiva.play.silhouette.impl.authenticators._
 import com.mohiva.play.silhouette.impl.daos.{CacheAuthenticatorDAO, DelegableAuthInfoDAO}
 import com.mohiva.play.silhouette.impl.providers.credentials.hasher.BCryptPasswordHasher
 import com.mohiva.play.silhouette.impl.providers.{CredentialsProvider, PasswordHasher, PasswordInfo}
@@ -48,11 +48,11 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   @Provides
   def provideEnvironment(
     userService: UserService,
-    authenticatorService: AuthenticatorService[CookieAuthenticator],
+    authenticatorService: AuthenticatorService[JWTAuthenticator],
     eventBus: EventBus,
-    credentialsProvider: CredentialsProvider): Environment[User, CookieAuthenticator] = {
+    credentialsProvider: CredentialsProvider): Environment[User, JWTAuthenticator] = {
 
-    Environment[User, CookieAuthenticator](
+    Environment[User, JWTAuthenticator](
       userService,
       authenticatorService,
       Map(credentialsProvider.id -> credentialsProvider),
@@ -71,15 +71,15 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   def provideAuthenticatorService(
     cacheLayer: CacheLayer,
     idGenerator: IDGenerator,
-    fingerprintGenerator: FingerprintGenerator): AuthenticatorService[CookieAuthenticator] = {
+    fingerprintGenerator: FingerprintGenerator): AuthenticatorService[JWTAuthenticator] = {
 
-    new CookieAuthenticatorService(CookieAuthenticatorSettings(
-      cookieName = Play.configuration.getString("silhouette.authenticator.cookieName").get,
-      cookiePath = Play.configuration.getString("silhouette.authenticator.cookiePath").get,
-      secureCookie = Play.configuration.getBoolean("silhouette.authenticator.secureCookie").get,
-      httpOnlyCookie = Play.configuration.getBoolean("silhouette.authenticator.httpOnlyCookie").get,
-      useFingerprinting = Play.configuration.getBoolean("silhouette.authenticator.useFingerPrinting").get
-    ), new CacheAuthenticatorDAO(cacheLayer), fingerprintGenerator, idGenerator, Clock())
+    new JWTAuthenticatorService(JWTAuthenticatorSettings(
+      headerName = Play.configuration.getString("silhouette.authenticator.headerName").get,
+      issuerClaim = Play.configuration.getString("silhouette.authenticator.issuerClaim").get,
+      encryptSubject = Play.configuration.getBoolean("silhouette.authenticator.encryptSubject").get,
+      authenticatorExpiry = Play.configuration.getInt("silhouette.authenticator.authenticatorExpiry").get,
+      sharedSecret = Play.configuration.getString("application.secret").get
+    ), Some(new CacheAuthenticatorDAO[JWTAuthenticator](cacheLayer)), idGenerator, Clock())
   }
 
   /**
@@ -90,10 +90,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    * @return The credentials provider.
    */
   @Provides
-  def provideCredentialsProvider(
-    authInfoService: AuthInfoService,
-    passwordHasher: PasswordHasher): CredentialsProvider = {
-
+  def provideCredentialsProvider(authInfoService: AuthInfoService, passwordHasher: PasswordHasher): CredentialsProvider = {
     new CredentialsProvider(authInfoService, passwordHasher, Seq(passwordHasher))
   }
 
@@ -105,7 +102,6 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    */
   @Provides
   def provideAuthInfoService(passwordInfoDAO: DelegableAuthInfoDAO[PasswordInfo]): AuthInfoService = {
-
     new DelegableAuthInfoService(passwordInfoDAO)
   }
 }

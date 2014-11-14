@@ -5,7 +5,7 @@ import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api._
 import com.mohiva.play.silhouette.api.services.AuthInfoService
-import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
+import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
 import com.mohiva.play.silhouette.impl.providers.{CredentialsProvider, PasswordHasher}
 import forms.SignUpForm
 import models.User
@@ -24,10 +24,10 @@ import scala.concurrent.Future
  * @param passwordHasher The password hasher implementation.
  */
 class SignUpController @Inject() (
-  implicit val env: Environment[User, CookieAuthenticator],
+  implicit val env: Environment[User, JWTAuthenticator],
   val userService: UserService,
   val authInfoService: AuthInfoService,
-  val passwordHasher: PasswordHasher) extends Silhouette[User, CookieAuthenticator] {
+  val passwordHasher: PasswordHasher) extends Silhouette[User, JWTAuthenticator] {
 
   /**
    * Registers a new user.

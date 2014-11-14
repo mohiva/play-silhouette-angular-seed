@@ -11,6 +11,7 @@ It's a starting point which can be extended to fit your needs.
 
 * Sign Up
 * Sign In (Credentials)
+* JWT authentication
 * Dependency Injection with Guice
 * Publishing Events
 

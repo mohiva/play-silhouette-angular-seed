@@ -3,9 +3,8 @@ package controllers
 import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api.{Environment, LogoutEvent, Silhouette}
-import com.mohiva.play.silhouette.impl.authenticators.CookieAuthenticator
+import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
 import models.User
-import play.api.mvc.Result
 
 import scala.concurrent.Future
 
@@ -14,8 +13,8 @@ import scala.concurrent.Future
  *
  * @param env The Silhouette environment.
  */
-class ApplicationController @Inject() (implicit val env: Environment[User, CookieAuthenticator])
-  extends Silhouette[User, CookieAuthenticator] {
+class ApplicationController @Inject() (implicit val env: Environment[User, JWTAuthenticator])
+  extends Silhouette[User, JWTAuthenticator] {
 
   /**
    * The signing in action.

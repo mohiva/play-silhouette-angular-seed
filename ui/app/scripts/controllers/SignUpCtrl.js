@@ -3,7 +3,7 @@
 /**
  * The sign up controller.
  */
-app.controller('SignUpCtrl', ['$scope', '$http', '$state', function($scope, $http, $state) {
+app.controller('SignUpCtrl', ['$scope', '$http', '$state', 'CookieService', function($scope, $http, $state, CookieService) {
 
   /**
    * The submit method.
@@ -16,7 +16,9 @@ app.controller('SignUpCtrl', ['$scope', '$http', '$state', function($scope, $htt
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       data: $('form').serialize()
-    }).then(function() {
+    }).then(function(data) {
+
+      CookieService.set('X-Auth-Token', data.headers('X-Auth-Token'));
       $state.go('home');
     }, function(error) {
       switch(error.status) {
