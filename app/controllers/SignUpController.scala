@@ -5,8 +5,9 @@ import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api._
 import com.mohiva.play.silhouette.api.services.AuthInfoService
+import com.mohiva.play.silhouette.api.util.PasswordHasher
 import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
-import com.mohiva.play.silhouette.impl.providers.{CredentialsProvider, PasswordHasher}
+import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import forms.SignUpForm
 import models.User
 import models.services.UserService

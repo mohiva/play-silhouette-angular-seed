@@ -6,10 +6,9 @@ import com.mohiva.play.silhouette.api.util._
 import com.mohiva.play.silhouette.api.{Environment, EventBus}
 import com.mohiva.play.silhouette.impl.authenticators._
 import com.mohiva.play.silhouette.impl.daos.{CacheAuthenticatorDAO, DelegableAuthInfoDAO}
-import com.mohiva.play.silhouette.impl.providers.credentials.hasher.BCryptPasswordHasher
-import com.mohiva.play.silhouette.impl.providers.{CredentialsProvider, PasswordHasher, PasswordInfo}
+import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import com.mohiva.play.silhouette.impl.services.DelegableAuthInfoService
-import com.mohiva.play.silhouette.impl.util.{DefaultFingerprintGenerator, PlayCacheLayer, SecureRandomIDGenerator}
+import com.mohiva.play.silhouette.impl.util._
 import models.User
 import models.daos._
 import models.services.{UserService, UserServiceImpl}
@@ -85,7 +84,7 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   /**
    * Provides the credentials provider.
    *
-   * @param authInfoService The auth info service implemenetation.
+   * @param authInfoService The auth info service implementation.
    * @param passwordHasher The default password hasher implementation.
    * @return The credentials provider.
    */
