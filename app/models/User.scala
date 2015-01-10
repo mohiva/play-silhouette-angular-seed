@@ -3,6 +3,7 @@ package models
 import java.util.UUID
 
 import com.mohiva.play.silhouette.api.{Identity, LoginInfo}
+import play.api.libs.json.Json
 
 /**
  * The user object.
@@ -24,3 +25,14 @@ case class User(
   email: Option[String],
   avatarURL: Option[String]
 ) extends Identity
+
+/**
+ * The companion object.
+ */
+object User {
+
+  /**
+   * Converts the [User] object to Json and vice versa.
+   */
+  implicit val jsonFormat = Json.format[User]
+}

@@ -14,8 +14,13 @@ dist
 /RUNNING_PID
 /.settings
 /bin
+/node_modules
 
 #yeoman
 /ui/.sass-cache
 /ui/.tmp
 /ui/node_modules
+/ui/app/bower_components
+
+#ruby
+.bundle

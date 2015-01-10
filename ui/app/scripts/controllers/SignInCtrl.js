@@ -1,43 +1,58 @@
 'use strict';
 
+/*global app: false */
+
 /**
  * The sign in controller.
  */
-app.controller('SignInCtrl', ['$scope', '$http', '$state', function($scope, $http, $state) {
+app.controller('SignInCtrl', ['$scope', '$alert', '$auth', function($scope, $alert, $auth) {
 
   /**
-   * The submit method.
+   * Submits the login form.
    */
   $scope.submit = function() {
-    $http({
-      method: 'POST',
-      url: '/authenticate',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      data: $('form').serialize()
-    }).then(function(data) {
-      switch(data.status) {
-        case 200:
-          $state.go('home');
-          break;
-      }
-    }, function(error) {
-        switch (error.status) {
-          case 400:
-            console.log(error);
-            break;
+    $auth.login({ email: $scope.email, password: $scope.password })
+      .then(function() {
+        $alert({
+          content: 'You have successfully signed in',
+          animation: 'fadeZoomFadeDown',
+          type: 'material',
+          duration: 3
+        });
+      })
+      .catch(function(response) {
+        console.log(response);
+        $alert({
+          content: response.data.message,
+          animation: 'fadeZoomFadeDown',
+          type: 'material',
+          duration: 3
+        });
+      });
+  };
 
-          case 401:
-            console.log(error);
-            break;
-
-          case 403:
-            $scope.form.$error.forbidden = true;
-            console.log(error);
-            break;
-        }
-      }
-    )
-  }
+  /**
+   * Authenticate with a social provider.
+   *
+   * @param provider The name of the provider to authenticate.
+   */
+  $scope.authenticate = function(provider) {
+    $auth.authenticate(provider)
+      .then(function() {
+        $alert({
+          content: 'You have successfully signed in',
+          animation: 'fadeZoomFadeDown',
+          type: 'material',
+          duration: 3
+        });
+      })
+      .catch(function(response) {
+        $alert({
+          content: response.data.message,
+          animation: 'fadeZoomFadeDown',
+          type: 'material',
+          duration: 3
+        });
+      });
+  };
 }]);

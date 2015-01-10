@@ -1,144 +1,167 @@
 @import "../bower_components/bootstrap-sass-official/assets/stylesheets/bootstrap-compass";
 @import "../bower_components/bootstrap-sass-official/assets/stylesheets/bootstrap";
 
-.input-group {
-  margin-bottom: 10px;
+body {
+  font-family: 'Open Sans', sans-serif;
+  padding-top: 50px;
+}
+h1 {
+
+}
+.starter-template {
+  padding: 40px 15px;
 }
 
-#signup-form {
-
-  .error {
-    color: #FF545D;
+form {
+  .text-danger {
+    color: #950e2d;
     margin-bottom: 10px;
   }
-
   .ng-invalid.ng-dirty {
-    background-color: #FF545D;
+    border-color: #950e2d;
   }
-
   .ng-valid.ng-dirty {
-    background-color: #3DDD51;
+    border-color: #057553;
   }
-}
 
-.browsehappy {
-  margin: 0.2em 0;
-  background: #ccc;
-  color: #000;
-  padding: 0.2em 0;
-}
-
-/* Space out content a bit */
-body {
-  padding-top: 65px;
-  padding-bottom: 20px;
-}
-
-h1 {
-  text-align: center;
-  font-size: 30px;
+  input, button {
+    margin: 5px 0;
+  }
 }
 
 fieldset {
   margin-top: 100px;
-  text-align: center;
 }
-
+legend {
+  font-family: 'Montserrat', sans-serif;
+  text-align: center;
+  font-size: 20px;
+  padding: 15px;
+}
 a {
   cursor: pointer;
 }
 
-.social-providers, .sign-in-now {
+.social-providers,
+.sign-in-now,
+.already-member,
+.not-a-member {
+  text-align: center;
   margin-top: 20px;
 }
 
 .user {
   margin-top: 50px;
 }
-
 .user .data {
   margin-top: 10px;
 }
 
-// Preventing the icon sits to deep
-.glyphicon {
-  top: 0px;
+.form-control {
+  border-radius: 0;
 }
 
-/* Everything but the jumbotron gets side spacing for mobile first views */
-.header,
-.marketing,
-.footer {
-  padding-left: 15px;
-  padding-right: 15px;
+.alert-material {
+  position: fixed;
+  right: 12px;
+  top: 62px;
+  z-index: 1;
+  display: inline-block;
+  min-height: 48px;
+  padding: 13px 24px 12px;
+  font-family: 'Roboto', sans-serif;
+  color: #f1f1f1;
+  cursor: default;
+  background: #323232;
+  border-radius: 2px;
+  outline: none;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
 }
 
-/* Custom page header */
-.header {
-  border-bottom: 1px solid #e5e5e5;
+[class^='ion-'] {
+  font-size: 1.2em;
 }
 
-/* Make the masthead heading the same height as the navigation */
-.header h3 {
-  margin-top: 0;
-  margin-bottom: 0;
-  line-height: 40px;
-  padding-bottom: 19px;
+.has-feedback .form-control-feedback {
+  top: 14px;
+  left: 0;
+  width: 46px;
+  height: 46px;
+  line-height: 46px;
+  color: #555;
 }
 
-/* Custom page footer */
-.footer {
-  padding-top: 19px;
-  color: #777;
-  border-top: 1px solid #e5e5e5;
+.has-feedback .form-control {
+  padding-left: 42.5px;
 }
 
-.container-narrow > hr {
-  margin: 30px 0;
+.btn {
+  font-weight: bold;
+  border-radius: 2px;
+  box-shadow: 0 2px 5px 0 rgba(0, 0, 0, .26);
 }
 
-/* Main marketing message and sign up button */
-.jumbotron {
-  text-align: center;
-  border-bottom: 1px solid #e5e5e5;
-  padding-top: 5px;
+.btn-lg {
+  font-size: 18px;
 }
 
-.jumbotron .btn {
-  font-size: 21px;
-  padding: 14px 24px;
+/*********************
+* Animations
+*********************/
+
+.fadeZoom.ng-enter {
+  -webkit-animation-duration: 0.6s, 0.2s;
+  -moz-animation-duration: 0.2s, 0.2s;
+  -ms-animation-duration: 0.2s, 0.2s;
+  animation-duration: 0.2, 0.2s;
+  -webkit-animation-name: fadeIn, zoomIn;
+  -moz-animation-name: fadeIn, zoomIn;
+  -ms-animation-name: fadeIn, zoomIn;
+  animation-name: fadeIn, zoomIn;
 }
 
-/* Supporting marketing content */
-.marketing {
-  margin: 40px 0;
+.fadeZoomFadeDown.ng-enter {
+  -webkit-animation-duration: 0.2s, 0.2s;
+  -moz-animation-duration: 0.2s, 0.2s;
+  -ms-animation-duration: 0.2s, 0.2s;
+  animation-duration: 0.2s, 0.2s;
+  -webkit-animation-name: fadeIn, zoomIn;
+  -moz-animation-name: fadeIn, zoomIn;
+  -ms-animation-name: fadeIn, zoomIn;
+  animation-name: fadeIn, zoomIn;
 }
 
-.marketing p + h4 {
-  margin-top: 28px;
+.fadeZoomFadeDown.ng-leave {
+  -webkit-animation: fadeOutDown 0.2s;
+  -moz-animation: fadeOutDown 0.2s;
+  -ms-animation: fadeOutDown 0.2s;
+  animation: fadeOutDown 0.2s;
 }
 
-/* Responsive: Portrait tablets and up */
-@media screen and (min-width: 768px) {
-  .container {
-    max-width: 730px;
+@-webkit-keyframes zoomIn {
+  0% {
+    opacity: 0;
+    -webkit-transform: scale3d(0.8, 0.8, 0.8);
+    -moz-transform: scale3d(0.8, 0.8, 0.8);
+    -ms-transform: scale3d(0.8, 0.8, 0.8);
+    transform: scale3d(0.8, 0.8, 0.8);
   }
 
-  /* Remove the padding we set earlier */
-  .header,
-  .marketing,
-  .footer {
-    padding-left: 0;
-    padding-right: 0;
-  }
-  /* Space out the masthead */
-  .header {
-    margin-bottom: 30px;
-  }
-  /* Remove the bottom border on the jumbotron for visual effect */
-  .jumbotron {
-    border-bottom: 0;
+  50% {
+    opacity: 1;
   }
 }
 
+@keyframes zoomIn {
+  0% {
+    opacity: 0;
+    -webkit-transform: scale3d(0.8, 0.8, 0.8);
+    -moz-transform: scale3d(0.8, 0.8, 0.8);
+    -ms-transform: scale3d(0.8, 0.8, 0.8);
+    transform: scale3d(0.8, 0.8, 0.8);
+  }
 
+  50% {
+    opacity: 1;
+  }
+}

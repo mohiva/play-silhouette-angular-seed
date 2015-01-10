@@ -1,13 +1,17 @@
 package utils.di
 
 import com.google.inject.{AbstractModule, Provides}
-import com.mohiva.play.silhouette.api.services.{AuthInfoService, AuthenticatorService}
+import com.mohiva.play.silhouette.api.services._
 import com.mohiva.play.silhouette.api.util._
 import com.mohiva.play.silhouette.api.{Environment, EventBus}
 import com.mohiva.play.silhouette.impl.authenticators._
 import com.mohiva.play.silhouette.impl.daos.{CacheAuthenticatorDAO, DelegableAuthInfoDAO}
-import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
-import com.mohiva.play.silhouette.impl.services.DelegableAuthInfoService
+import com.mohiva.play.silhouette.impl.providers._
+import com.mohiva.play.silhouette.impl.providers.oauth1._
+import com.mohiva.play.silhouette.impl.providers.oauth1.services.PlayOAuth1Service
+import com.mohiva.play.silhouette.impl.providers.oauth2._
+import com.mohiva.play.silhouette.impl.providers.oauth2.state.DummyStateProvider
+import com.mohiva.play.silhouette.impl.services._
 import com.mohiva.play.silhouette.impl.util._
 import models.User
 import models.daos._
@@ -28,11 +32,14 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     bind[UserService].to[UserServiceImpl]
     bind[UserDAO].to[UserDAOImpl]
     bind[DelegableAuthInfoDAO[PasswordInfo]].to[PasswordInfoDAO]
+    bind[DelegableAuthInfoDAO[OAuth1Info]].to[OAuth1InfoDAO]
+    bind[DelegableAuthInfoDAO[OAuth2Info]].to[OAuth2InfoDAO]
     bind[CacheLayer].to[PlayCacheLayer]
     bind[HTTPLayer].to[PlayHTTPLayer]
+    bind[OAuth2StateProvider].to[DummyStateProvider]
     bind[IDGenerator].toInstance(new SecureRandomIDGenerator())
-    bind[FingerprintGenerator].toInstance(new DefaultFingerprintGenerator(false))
     bind[PasswordHasher].toInstance(new BCryptPasswordHasher)
+    bind[FingerprintGenerator].toInstance(new DefaultFingerprintGenerator(false))
     bind[EventBus].toInstance(EventBus())
   }
 
@@ -49,12 +56,19 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     userService: UserService,
     authenticatorService: AuthenticatorService[JWTAuthenticator],
     eventBus: EventBus,
-    credentialsProvider: CredentialsProvider): Environment[User, JWTAuthenticator] = {
+    credentialsProvider: CredentialsProvider,facebookProvider: FacebookProvider,
+    googleProvider: GoogleProvider,
+    twitterProvider: TwitterProvider): Environment[User, JWTAuthenticator] = {
 
     Environment[User, JWTAuthenticator](
       userService,
       authenticatorService,
-      Map(credentialsProvider.id -> credentialsProvider),
+      Map(
+        credentialsProvider.id -> credentialsProvider,
+        facebookProvider.id -> facebookProvider,
+        googleProvider.id -> googleProvider,
+        twitterProvider.id -> twitterProvider
+      ),
       eventBus
     )
   }
@@ -82,25 +96,98 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   }
 
   /**
+   * Provides the auth info service.
+   *
+   * @param passwordInfoDAO The implementation of the delegable password auth info DAO.
+   * @param oauth1InfoDAO The implementation of the delegable OAuth1 auth info DAO.
+   * @param oauth2InfoDAO The implementation of the delegable OAuth2 auth info DAO.
+   * @return The auth info service instance.
+   */
+  @Provides
+  def provideAuthInfoService(
+    passwordInfoDAO: DelegableAuthInfoDAO[PasswordInfo],
+    oauth1InfoDAO: DelegableAuthInfoDAO[OAuth1Info],
+    oauth2InfoDAO: DelegableAuthInfoDAO[OAuth2Info]): AuthInfoService = {
+
+    new DelegableAuthInfoService(passwordInfoDAO, oauth1InfoDAO, oauth2InfoDAO)
+  }
+
+  /**
+   * Provides the avatar service.
+   *
+   * @param httpLayer The HTTP layer implementation.
+   * @return The avatar service implementation.
+   */
+  @Provides
+  def provideAvatarService(httpLayer: HTTPLayer): AvatarService = new GravatarService(httpLayer)
+
+  /**
    * Provides the credentials provider.
    *
-   * @param authInfoService The auth info service implementation.
+   * @param authInfoService The auth info service implemenetation.
    * @param passwordHasher The default password hasher implementation.
    * @return The credentials provider.
    */
   @Provides
-  def provideCredentialsProvider(authInfoService: AuthInfoService, passwordHasher: PasswordHasher): CredentialsProvider = {
+  def provideCredentialsProvider(
+    authInfoService: AuthInfoService,
+    passwordHasher: PasswordHasher): CredentialsProvider = {
+
     new CredentialsProvider(authInfoService, passwordHasher, Seq(passwordHasher))
   }
 
   /**
-   * Provides the auth info service.
+   * Provides the Facebook provider.
    *
-   * @param passwordInfoDAO The implementation of the delegable password auth info DAO.
-   * @return The auth info service instance.
+   * @param httpLayer The HTTP layer implementation.
+   * @param stateProvider The OAuth2 state provider implementation.
+   * @return The Facebook provider.
    */
   @Provides
-  def provideAuthInfoService(passwordInfoDAO: DelegableAuthInfoDAO[PasswordInfo]): AuthInfoService = {
-    new DelegableAuthInfoService(passwordInfoDAO)
+  def provideFacebookProvider(httpLayer: HTTPLayer, stateProvider: OAuth2StateProvider): FacebookProvider = {
+    FacebookProvider(httpLayer, stateProvider, OAuth2Settings(
+      authorizationURL = Play.configuration.getString("silhouette.facebook.authorizationURL").get,
+      accessTokenURL = Play.configuration.getString("silhouette.facebook.accessTokenURL").get,
+      redirectURL = Play.configuration.getString("silhouette.facebook.redirectURL").get,
+      clientID = Play.configuration.getString("silhouette.facebook.clientID").get,
+      clientSecret = Play.configuration.getString("silhouette.facebook.clientSecret").get,
+      scope = Play.configuration.getString("silhouette.facebook.scope")))
+  }
+
+  /**
+   * Provides the Google provider.
+   *
+   * @param httpLayer The HTTP layer implementation.
+   * @param stateProvider The OAuth2 state provider implementation.
+   * @return The Google provider.
+   */
+  @Provides
+  def provideGoogleProvider(httpLayer: HTTPLayer, stateProvider: OAuth2StateProvider): GoogleProvider = {
+    GoogleProvider(httpLayer, stateProvider, OAuth2Settings(
+      authorizationURL = Play.configuration.getString("silhouette.google.authorizationURL").get,
+      accessTokenURL = Play.configuration.getString("silhouette.google.accessTokenURL").get,
+      redirectURL = Play.configuration.getString("silhouette.google.redirectURL").get,
+      clientID = Play.configuration.getString("silhouette.google.clientID").get,
+      clientSecret = Play.configuration.getString("silhouette.google.clientSecret").get,
+      scope = Play.configuration.getString("silhouette.google.scope")))
+  }
+
+  /**
+   * Provides the Twitter provider.
+   *
+   * @param httpLayer The HTTP layer implementation.
+   * @return The Twitter provider.
+   */
+  @Provides
+  def provideTwitterProvider(httpLayer: HTTPLayer): TwitterProvider = {
+    val settings = OAuth1Settings(
+      requestTokenURL = Play.configuration.getString("silhouette.twitter.requestTokenURL").get,
+      accessTokenURL = Play.configuration.getString("silhouette.twitter.accessTokenURL").get,
+      authorizationURL = Play.configuration.getString("silhouette.twitter.authorizationURL").get,
+      callbackURL = Play.configuration.getString("silhouette.twitter.callbackURL").get,
+      consumerKey = Play.configuration.getString("silhouette.twitter.consumerKey").get,
+      consumerSecret = Play.configuration.getString("silhouette.twitter.consumerSecret").get)
+
+    TwitterProvider(httpLayer, new PlayOAuth1Service(settings), settings)
   }
 }
