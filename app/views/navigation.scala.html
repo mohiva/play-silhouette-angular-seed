@@ -1,4 +1,4 @@
-@()(user: Option[User])
+@()
 
 <div class="navigation-area" ng-controller="NavigationCtrl">
     <header class="navbar navbar-inverse navbar-fixed-top" role="navigation">
@@ -14,24 +14,24 @@
             </div>
             <div class="collapse navbar-collapse" ng-class="{ in: !navCollapsed }" ng-click="navCollapsed = !navCollapsed">
                 <ul class="nav navbar-nav">
-                    @user.map { u =>
-                        <li><a ui-sref="home">Home</a></li>
-                    }.getOrElse {
-                        <li><a ui-sref="signin">Home</a></li>
-                    }
+                    <!-- User is logged in -->
+                    <li ng-if="isAuthenticated()"><a ui-sref="home">Home</a></li>
+
+                    <!-- User is logged out -->
+                    <li ng-if="!isAuthenticated()"><a ui-sref="signIn">Home</a></li>
+
                     <li><a href="https://github.com/mohiva/play-silhouette-angular-seed">GitHub</a></li>
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
-                    @user.map { u =>
-                        <li ><a ui-sref="home">@u.fullName</a></li>
-                        <li ng-click="logout()"><a href="">Sign Out</a></li>
-                    }.getOrElse {
-                        <li><a ui-sref="signin">Sign In</a></li>
-                        <li><a ui-sref="signup">Sign Up</a></li>
-                    }
+                    <!-- User is logged in -->
+                    <li ng-if="isAuthenticated()"><a ui-sref="home">{{user.fullName ? user.fullName : user.firstName}}</a></li>
+                    <li ng-if="isAuthenticated()" ui-sref="signOut"><a href="">Sign Out</a></li>
+
+                    <!-- User is logged out -->
+                    <li ng-if="!isAuthenticated()"><a ui-sref="signIn">Sign In</a></li>
+                    <li ng-if="!isAuthenticated()"><a ui-sref="signUp">Sign Up</a></li>
                 </ul>
             </div>
         </div>
     </header>
 </div>
-

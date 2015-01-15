@@ -5,6 +5,7 @@ import javax.inject.Inject
 import com.mohiva.play.silhouette.api.{Environment, LogoutEvent, Silhouette}
 import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
 import models.User
+import play.api.libs.json.Json
 
 import scala.concurrent.Future
 
@@ -17,13 +18,12 @@ class ApplicationController @Inject() (implicit val env: Environment[User, JWTAu
   extends Silhouette[User, JWTAuthenticator] {
 
   /**
-   * The signing in action.
+   * Returns the user.
+   *
+   * @return The result to display.
    */
-  def signIn = UserAwareAction.async { implicit request =>
-    request.identity match {
-      case Some(user) => Future.successful(Redirect(routes.ApplicationController.signIn))
-      case None => Future.successful(Ok(views.html.signIn()))
-    }
+  def user = SecuredAction.async { implicit request =>
+    Future.successful(Ok(Json.toJson(request.identity)))
   }
 
   /**
@@ -35,27 +35,17 @@ class ApplicationController @Inject() (implicit val env: Environment[User, JWTAu
   }
 
   /**
-   * Provides the home page.
-   *
-   * @return The result to display.
-   */
-  def home = SecuredAction.async { implicit request =>
-    Future.successful(Ok(views.html.home(request.identity)))
-  }
-
-  /**
    * Provides the desired template.
    *
    * @param template The template to provide.
    * @return The template.
    */
   def view(template: String) = UserAwareAction { implicit request =>
-    implicit val maybeUser = request.identity
-
     template match {
+      case "home" => Ok(views.html.home())
       case "signUp" => Ok(views.html.signUp())
       case "signIn" => Ok(views.html.signIn())
-      case "navigation" => Ok(views.html.navigation.render(request.identity))
+      case "navigation" => Ok(views.html.navigation.render())
       case _ => NotFound
     }
   }

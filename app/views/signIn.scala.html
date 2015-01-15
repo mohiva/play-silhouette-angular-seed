@@ -1,44 +1,63 @@
-@()
+@()(implicit env: com.mohiva.play.silhouette.api.Environment[User, _], request: RequestHeader)
 
-@import forms.SignInForm._
+@import com.mohiva.play.silhouette.impl.providers._
+@import forms.SignInForm.form
 @implicitField = @{ helper.FieldConstructor(fields.constructor.f) }
 
-@defining(form) { signInForm =>
-    <div class="content-area" ng-controller="SignInCtrl">
-        <div class="jumbotron">
-            <h1>Sign In</h1>
-            <p>Sign in with your credentials</p>
-            <form name="form" id="signup-form" ng-submit="form.$valid && submit()" ng-model-options="{ updateOn: 'submit blur' }" novalidate>
+<fieldset class="col-md-6 col-md-offset-3" ng-controller="SignInCtrl">
+    <legend >Sign in with your credentials</legend>
+    <form name="form" id="sign-in-form" ng-submit="submit()" ng-model-options="{ updateOn: 'submit blur' }" autocomplete="off">
 
-                <span class="error" ng-show="form.$submitted && form.identifier.$error.email">Please correct your email address!</span>
-                <span class="error" ng-show="form.$submitted && form.identifier.$error.required">The email address is required!</span>
-                <div class="input-group">
-                    <span class="input-group-addon glyphicon glyphicon-envelope"></span>
-                    @helper.inputText(signInForm("identifier"),
-                        'type -> "email",
-                        'placeholder -> "Email",
-                        'class -> "form-control",
-                        '_label -> "",
-                        'required -> "",
-                        'email -> "",
-                        Symbol("ng-model") -> "email"
-                    )
-                </div>
-                <span class="error" ng-show="form.$submitted && form.password.$error.required">The password is required!</span>
-                <div class="input-group">
-                    <span class="input-group-addon glyphicon glyphicon-warning-sign"></span>
-                    @helper.inputPassword(signInForm("password"),
-                        'placeholder -> "Password",
-                        'class -> "form-control",
-                        '_label -> "",
-                        'required -> "",
-                        Symbol("ng-model") -> "password"
-                    )
-                </div>
-                <span class="error" ng-show="form.$submitted && form.$error.forbidden">Your session has expired! Try to create a new Account!</span>
-                <button id="submit" type="submit" value="submit" class="btn btn-primary btn-block">Submit</button>
-                <span><br>Not a member? <a ui-sref="signup"> Sign up now </a></span>
-            </form>
+        <div class="form-group has-feedback">
+            @helper.inputText(form("identifier"),
+                'type -> "email",
+                'placeholder -> "Email",
+                'class -> "form-control input-lg",
+                '_label -> "",
+                'required -> "",
+                'email -> "",
+                Symbol("ng-model") -> "email"
+            )
+            <span class="ion-at form-control-feedback"></span>
+            <div class="help-block text-danger" ng-if="form.identifier.$dirty" ng-messages="form.identifier.$error">
+                <div ng-message="required">@Messages("error.required")</div>
+                <div ng-message="email">@Messages("error.email")</div>
+            </div>
         </div>
-    </div>
-}
+
+        <div class="form-group has-feedback">
+            @helper.inputPassword(form("password"),
+                'placeholder -> "Password",
+                'class -> "form-control input-lg",
+                '_label -> "",
+                'required -> "",
+                Symbol("ng-model") -> "password"
+            )
+            <span class="ion-key form-control-feedback"></span>
+            <div class="help-block text-danger" ng-if="form.password.$dirty" ng-messages="form.password.$error">
+                <div ng-message="required">@Messages("error.required")</div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <button ng-disabled="form.$invalid" id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">Sign in</button>
+        </div>
+
+        <div>
+            <p class="not-a-member">Not a member? <a ui-sref="signUp">Sign up now</a></p>
+        </div>
+
+        @defining(env.providers.values.filter(_.isInstanceOf[SocialProvider])) { providers =>
+            @if(!providers.isEmpty) {
+                <div class="social-providers">
+                    <p>Or use your existing account on one of the following services to sign in:</p>
+                    <div>
+                    @for(p <- providers) {
+                        <a ng-click="authenticate('@p.id')"><img src="@routes.Assets.at(s"images/providers/${p.id}.png")" style="width:60px;height:60px;"></a>
+                    }
+                    </div>
+                </div>
+            }
+        }
+    </form>
+</fieldset>

@@ -1,19 +1,18 @@
 'use strict';
 
+/*global app: false */
+
 /**
  * The navigation controller.
  */
-app.controller('NavigationCtrl', ['$scope', '$http', '$state', function($scope, $http, $state) {
+app.controller('NavigationCtrl', ['$scope', '$auth', function($scope, $auth) {
 
   /**
-   * Logs out the user.
+   * Indicates if the user is authenticated or not.
+   *
+   * @returns {boolean} True if the user is authenticated, false otherwise.
    */
-  $scope.logout = function() {
-    $http({
-      method: 'GET',
-      url: '/signout'
-    }).then(function() {
-      $state.go('signin');
-    });
+  $scope.isAuthenticated = function() {
+    return $auth.isAuthenticated();
   };
 }]);

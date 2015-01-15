@@ -1,68 +1,77 @@
-@()(implicit request: RequestHeader, user: Option[User])
+@()(implicit request: RequestHeader)
 
-@import forms.SignUpForm._
+@import forms.SignUpForm.form
 @implicitField = @{ helper.FieldConstructor(fields.constructor.f) }
 
-@defining(form) { signUpForm =>
-    <div class="content-area" ng-controller="SignUpCtrl">
-        <div class="jumbotron">
-            <h1>Sign Up</h1>
-            <p>Create your demo account</p>
-            <form name="form" id="signup-form" ng-submit="form.$valid && submit()" ng-model-options="{ updateOn: 'submit blur' }" novalidate>
-                <span class="error" ng-show="form.$submitted && form.firstName.$error.required">The first name is required!</span>
-                <div class="input-group">
-                    <span class="input-group-addon glyphicon glyphicon-user"></span>
-                    @helper.inputText(signUpForm("firstName"),
-                        'placeholder -> "First name",
-                        'class -> "form-control",
-                        '_label -> "",
-                        'required -> "",
-                        Symbol("ng-model") -> "firstName"
-                    )
-                </div>
+<fieldset class="col-md-6 col-md-offset-3" ng-controller="SignUpCtrl">
+    <legend >Sign up for a new account</legend>
+    <form name="form" id="sign-up-form" ng-submit="submit()" ng-model-options="{ updateOn: 'submit blur' }" autocomplete="off">
 
-                <span class="error" ng-show="form.$submitted && form.lastName.$error.required">The last name is required!</span>
-                <div class="input-group">
-                    <span class="input-group-addon glyphicon glyphicon-user"></span>
-                    @helper.inputText(signUpForm("lastName"),
-                        'placeholder -> "Last name",
-                        'class -> "form-control",
-                        '_label -> "",
-                        'required -> "",
-                        Symbol("ng-model") -> "lastName"
-                    )
-                </div>
-                <span class="error" ng-show="form.$submitted && form.email.$error.email">Please correct your email address!</span>
-                <span class="error" ng-show="form.$submitted && form.email.$error.required">The email address is required!</span>
-
-                <div class="input-group">
-                    <span class="input-group-addon glyphicon glyphicon-envelope"></span>
-                    @helper.inputText(signUpForm("email"),
-                        'type -> "email",
-                        'placeholder -> "Email",
-                        'class -> "form-control",
-                        '_label -> "",
-                        'required -> "",
-                        'email -> "",
-                        Symbol("ng-model") -> "email"
-                    )
-                </div>
-                <span class="error" ng-show="form.$submitted && form.password.$error.required">The password is required!</span>
-                <div class="input-group">
-                    <span class="input-group-addon glyphicon glyphicon-warning-sign"></span>
-                    @helper.inputPassword(signUpForm("password"),
-                        'placeholder -> "Password",
-                        'class -> "form-control",
-                        '_label -> "",
-                        'required -> "",
-                        Symbol("ng-model") -> "password"
-                    )
-                </div>
-                <button id="submit" type="submit" value="submit" class="btn btn-primary btn-block">Submit</button>
-                <span><br>Already a member? <a ui-sref="signin"> Sign in now </a></span>
-            </form>
+        <div class="form-group has-feedback">
+            @helper.inputText(form("firstName"),
+                'placeholder -> "First name",
+                'class -> "form-control input-lg",
+                '_label -> "",
+                'required -> "",
+                Symbol("ng-model") -> "firstName"
+            )
+            <span class="ion-person form-control-feedback"></span>
+            <div class="help-block text-danger" ng-if="form.firstName.$dirty" ng-messages="form.firstName.$error">
+                <div ng-message="required">@Messages("error.required")</div>
+            </div>
         </div>
-    </div>
-}
 
+        <div class="form-group has-feedback">
+            @helper.inputText(form("lastName"),
+                'placeholder -> "Last name",
+                'class -> "form-control input-lg",
+                '_label -> "",
+                'required -> "",
+                Symbol("ng-model") -> "lastName"
+            )
+            <span class="ion-person form-control-feedback"></span>
+            <div class="help-block text-danger" ng-if="form.lastName.$dirty" ng-messages="form.lastName.$error">
+                <div ng-message="required">@Messages("error.required")</div>
+            </div>
+        </div>
 
+        <div class="form-group has-feedback">
+            @helper.inputText(form("email"),
+                'type -> "email",
+                'placeholder -> "Email",
+                'class -> "form-control input-lg",
+                '_label -> "",
+                'required -> "",
+                'email -> "",
+                Symbol("ng-model") -> "email"
+            )
+            <span class="ion-at form-control-feedback"></span>
+            <div class="help-block text-danger" ng-if="form.email.$dirty" ng-messages="form.email.$error">
+                <div ng-message="required">@Messages("error.required")</div>
+                <div ng-message="email">@Messages("error.email")</div>
+            </div>
+        </div>
+
+        <div class="form-group has-feedback">
+            @helper.inputPassword(form("password"),
+                'placeholder -> "Password",
+                'class -> "form-control input-lg",
+                '_label -> "",
+                'required -> "",
+                Symbol("ng-model") -> "password"
+            )
+            <span class="ion-key form-control-feedback"></span>
+            <div class="help-block text-danger" ng-if="form.password.$dirty" ng-messages="form.password.$error">
+                <div ng-message="required">@Messages("error.required")</div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <button ng-disabled="form.$invalid" id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">Sign up</button>
+        </div>
+
+        <div>
+            <p class="already-member">Already a member? <a ui-sref="signIn">Sign in now</a></p>
+        </div>
+    </form>
+</fieldset>

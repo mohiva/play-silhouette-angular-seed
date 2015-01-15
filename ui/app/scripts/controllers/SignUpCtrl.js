@@ -1,31 +1,35 @@
 'use strict';
 
+/*global app: false */
+
 /**
  * The sign up controller.
  */
-app.controller('SignUpCtrl', ['$scope', '$http', '$state', 'CookieService', function($scope, $http, $state, CookieService) {
+app.controller('SignUpCtrl', ['$scope', '$alert', '$auth', function($scope, $alert, $auth) {
 
   /**
    * The submit method.
    */
   $scope.submit = function() {
-    $http({
-      method: 'POST',
-      url: '/signup',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      data: $('form').serialize()
-    }).then(function(data) {
-
-      CookieService.set('X-Auth-Token', data.headers('X-Auth-Token'));
-      $state.go('home');
-    }, function(error) {
-      switch(error.status) {
-        case 400:
-          console.log(data);
-          break;
-      }
-    })
+    $auth.signup({
+      firstName: $scope.firstName,
+      lastName: $scope.lastName,
+      email: $scope.email,
+      password: $scope.password
+    }).then(function() {
+      $alert({
+        content: 'You have successfully signed up',
+        animation: 'fadeZoomFadeDown',
+        type: 'material',
+        duration: 3
+      });
+    }).catch(function(response) {
+      $alert({
+        content: response.data.message,
+        animation: 'fadeZoomFadeDown',
+        type: 'material',
+        duration: 3
+      });
+    });
   };
 }]);
