@@ -6,6 +6,10 @@ to create a SPA with [AngularJS](https://angularjs.org/)/[Satellizer](https://gi
 scaffolded by [yeoman](https://github.com/tuplejump/play-yeoman). It's a starting point which can be extended to fit
 your needs.
 
+## Example
+
+You can find a running example of this template under the following URL: https://play-silhouette-angular-seed.herokuapp.com/
+
 ## Features
 
 * Sign Up
@@ -55,6 +59,10 @@ Consulate the [Silhouette documentation](http://docs.silhouette.mohiva.com/) for
 
   $ run
   ```
+
+## Activator
+
+See https://typesafe.com/activator/template/play-silhouette-angular-seed
 
 # License
 

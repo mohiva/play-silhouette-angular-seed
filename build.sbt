@@ -30,8 +30,6 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 //********************************************************
 Yeoman.yeomanSettings
 
-Yeoman.forceGrunt := false
-
 //********************************************************
 // Scalariform settings
 //********************************************************
