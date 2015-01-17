@@ -8,7 +8,11 @@ your needs.
 
 ## Example
 
-You can find a running example of this template under the following URL: https://play-silhouette-angular-seed.herokuapp.com/
+[![Deploy to Heroku](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+
+(The "Build App" phase will take a few minutes)
+
+Or you can find a running example of this template under the following URL: https://play-silhouette-angular-seed.herokuapp.com/
 
 ## Features
 

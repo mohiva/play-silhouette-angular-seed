@@ -1,0 +1,17 @@
+{
+  "name": "play-silhouette-angular",
+  "description": "Seed project to show how Silhouette can be used to create a SPA with AngularJS/Satellizer and Play scaffolded by yeoman.",
+  "keywords": [
+    "Play",
+    "Silhouette",
+    "Angular"
+  ],
+  "website": "https://github.com/akkie/play-silhouette-angular-seed",
+  "repository": "https://github.com/akkie/play-silhouette-angular-seed",
+  "success_url": "/",
+  "env": {
+    "BUILDPACK_URL": "https://github.com/heroku/heroku-buildpack-multi",
+    "NPM_CONFIG_PRODUCTION": "false",
+    "PLAY_CONF_FILE": "application.conf"
+  }
+}
