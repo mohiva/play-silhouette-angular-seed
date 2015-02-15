@@ -1,6 +1,6 @@
 package models.services
 
-import com.mohiva.play.silhouette.api.services.{AuthInfo, IdentityService}
+import com.mohiva.play.silhouette.api.services.{ AuthInfo, IdentityService }
 import com.mohiva.play.silhouette.impl.providers.CommonSocialProfile
 import models.User
 

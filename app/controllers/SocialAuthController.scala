@@ -32,7 +32,6 @@ class SocialAuthController @Inject() (
    * @return The result to display.
    */
   def authenticate(provider: String) = Action.async { implicit request =>
-    println(request.body)
     (env.providers.get(provider) match {
       case Some(p: SocialProvider with CommonSocialProfileBuilder) =>
         p.authenticate().flatMap {

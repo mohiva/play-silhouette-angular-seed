@@ -1,13 +1,14 @@
 package utils.di
 
-import com.google.inject.{AbstractModule, Provides}
+import com.google.inject.{ AbstractModule, Provides }
 import com.mohiva.play.silhouette.api.services._
 import com.mohiva.play.silhouette.api.util._
-import com.mohiva.play.silhouette.api.{Environment, EventBus}
+import com.mohiva.play.silhouette.api.{ Environment, EventBus }
 import com.mohiva.play.silhouette.impl.authenticators._
-import com.mohiva.play.silhouette.impl.daos.{CacheAuthenticatorDAO, DelegableAuthInfoDAO}
+import com.mohiva.play.silhouette.impl.daos.{ CacheAuthenticatorDAO, DelegableAuthInfoDAO }
 import com.mohiva.play.silhouette.impl.providers._
 import com.mohiva.play.silhouette.impl.providers.oauth1._
+import com.mohiva.play.silhouette.impl.providers.oauth1.secrets.{ CookieSecretProvider, CookieSecretSettings }
 import com.mohiva.play.silhouette.impl.providers.oauth1.services.PlayOAuth1Service
 import com.mohiva.play.silhouette.impl.providers.oauth2._
 import com.mohiva.play.silhouette.impl.providers.oauth2.state.DummyStateProvider
@@ -15,10 +16,12 @@ import com.mohiva.play.silhouette.impl.services._
 import com.mohiva.play.silhouette.impl.util._
 import models.User
 import models.daos._
-import models.services.{UserService, UserServiceImpl}
+import models.services.{ UserService, UserServiceImpl }
 import net.codingwell.scalaguice.ScalaModule
 import play.api.Play
 import play.api.Play.current
+
+import scala.collection.immutable.ListMap
 
 /**
  * The Guice module which wires all Silhouette dependencies.
@@ -49,6 +52,10 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    * @param userService The user service implementation.
    * @param authenticatorService The authentication service implementation.
    * @param eventBus The event bus instance.
+   * @param credentialsProvider The credentials provider implementation.
+   * @param facebookProvider The Facebook provider implementation.
+   * @param googleProvider The Google provider implementation.
+   * @param twitterProvider The Twitter provider implementation.
    * @return The Silhouette environment.
    */
   @Provides
@@ -56,17 +63,18 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
     userService: UserService,
     authenticatorService: AuthenticatorService[JWTAuthenticator],
     eventBus: EventBus,
-    credentialsProvider: CredentialsProvider,facebookProvider: FacebookProvider,
+    credentialsProvider: CredentialsProvider,
+    facebookProvider: FacebookProvider,
     googleProvider: GoogleProvider,
     twitterProvider: TwitterProvider): Environment[User, JWTAuthenticator] = {
 
     Environment[User, JWTAuthenticator](
       userService,
       authenticatorService,
-      Map(
+      ListMap(
         credentialsProvider.id -> credentialsProvider,
-        facebookProvider.id -> facebookProvider,
         googleProvider.id -> googleProvider,
+        facebookProvider.id -> facebookProvider,
         twitterProvider.id -> twitterProvider
       ),
       eventBus
@@ -122,6 +130,23 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   def provideAvatarService(httpLayer: HTTPLayer): AvatarService = new GravatarService(httpLayer)
 
   /**
+   * Provides the OAuth1 token secret provider.
+   *
+   * @return The OAuth1 token secret provider implementation.
+   */
+  @Provides
+  def provideOAuth1TokenSecretProvider: OAuth1TokenSecretProvider = {
+    new CookieSecretProvider(CookieSecretSettings(
+      cookieName = Play.configuration.getString("silhouette.oauth1TokenSecretProvider.cookieName").get,
+      cookiePath = Play.configuration.getString("silhouette.oauth1TokenSecretProvider.cookiePath").get,
+      cookieDomain = Play.configuration.getString("silhouette.oauth1TokenSecretProvider.cookieDomain"),
+      secureCookie = Play.configuration.getBoolean("silhouette.oauth1TokenSecretProvider.secureCookie").get,
+      httpOnlyCookie = Play.configuration.getBoolean("silhouette.oauth1TokenSecretProvider.httpOnlyCookie").get,
+      expirationTime = Play.configuration.getInt("silhouette.oauth1TokenSecretProvider.expirationTime").get
+    ), Clock())
+  }
+
+  /**
    * Provides the credentials provider.
    *
    * @param authInfoService The auth info service implemenetation.
@@ -146,7 +171,6 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   @Provides
   def provideFacebookProvider(httpLayer: HTTPLayer, stateProvider: OAuth2StateProvider): FacebookProvider = {
     FacebookProvider(httpLayer, stateProvider, OAuth2Settings(
-      authorizationURL = Play.configuration.getString("silhouette.facebook.authorizationURL").get,
       accessTokenURL = Play.configuration.getString("silhouette.facebook.accessTokenURL").get,
       redirectURL = Play.configuration.getString("silhouette.facebook.redirectURL").get,
       clientID = Play.configuration.getString("silhouette.facebook.clientID").getOrElse(""),
@@ -164,7 +188,6 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
   @Provides
   def provideGoogleProvider(httpLayer: HTTPLayer, stateProvider: OAuth2StateProvider): GoogleProvider = {
     GoogleProvider(httpLayer, stateProvider, OAuth2Settings(
-      authorizationURL = Play.configuration.getString("silhouette.google.authorizationURL").get,
       accessTokenURL = Play.configuration.getString("silhouette.google.accessTokenURL").get,
       redirectURL = Play.configuration.getString("silhouette.google.redirectURL").get,
       clientID = Play.configuration.getString("silhouette.google.clientID").getOrElse(""),
@@ -176,10 +199,11 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
    * Provides the Twitter provider.
    *
    * @param httpLayer The HTTP layer implementation.
+   * @param tokenSecretProvider The token secret provider implementation.
    * @return The Twitter provider.
    */
   @Provides
-  def provideTwitterProvider(httpLayer: HTTPLayer): TwitterProvider = {
+  def provideTwitterProvider(httpLayer: HTTPLayer, tokenSecretProvider: OAuth1TokenSecretProvider): TwitterProvider = {
     val settings = OAuth1Settings(
       requestTokenURL = Play.configuration.getString("silhouette.twitter.requestTokenURL").get,
       accessTokenURL = Play.configuration.getString("silhouette.twitter.accessTokenURL").get,
@@ -188,6 +212,6 @@ class SilhouetteModule extends AbstractModule with ScalaModule {
       consumerKey = Play.configuration.getString("silhouette.twitter.consumerKey").getOrElse(""),
       consumerSecret = Play.configuration.getString("silhouette.twitter.consumerSecret").getOrElse(""))
 
-    TwitterProvider(httpLayer, new PlayOAuth1Service(settings), settings)
+    TwitterProvider(httpLayer, new PlayOAuth1Service(settings), tokenSecretProvider, settings)
   }
 }
