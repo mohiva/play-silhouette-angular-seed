@@ -65,8 +65,9 @@ class SignUpController @Inject() (
             Ok(Json.obj("token" -> token))
           }
       }
-    }.recoverTotal { case error =>
-      Future.successful(Unauthorized(Json.obj("message" -> Messages("invalid.data"))))
+    }.recoverTotal {
+      case error =>
+        Future.successful(Unauthorized(Json.obj("message" -> Messages("invalid.data"))))
     }
   }
 }

@@ -5,7 +5,7 @@ import javax.inject.Inject
 import com.mohiva.play.silhouette.api.exceptions.AuthenticationException
 import com.mohiva.play.silhouette.api.services.AuthInfoService
 import com.mohiva.play.silhouette.api.util.Credentials
-import com.mohiva.play.silhouette.api.{Environment, LoginEvent, Silhouette}
+import com.mohiva.play.silhouette.api.{ Environment, LoginEvent, Silhouette }
 import com.mohiva.play.silhouette.impl
 import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
@@ -14,7 +14,7 @@ import models.services.UserService
 import play.api.i18n.Messages
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import play.api.mvc.{Action, RequestHeader}
+import play.api.mvc.{ Action, RequestHeader }
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -71,8 +71,9 @@ class CredentialsAuthController @Inject() (
           case None => Future.failed(new AuthenticationException("Couldn't find user"))
         }
       }.recoverWith(exceptionHandler)
-    }.recoverTotal { case error =>
-      Future.successful(Unauthorized(Json.obj("message" -> Messages("invalid.credentials"))))
+    }.recoverTotal {
+      case error =>
+        Future.successful(Unauthorized(Json.obj("message" -> Messages("invalid.credentials"))))
     }
   }
 }
