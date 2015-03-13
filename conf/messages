@@ -4,3 +4,4 @@ invalid.credentials = Invalid credentials!
 invalid.data = Invalid data!
 access.denied = Access denied!
 user.exists = There already exists a user with this email!
+could.not.authenticate = Could not authenticate with social provider! Please try again!

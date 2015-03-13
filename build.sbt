@@ -10,16 +10,16 @@ import scalariform.formatter.preferences._
 
 name := "play-silhouette-angular-seed"
 
-version := "2.0-RC1"
+version := "2.0-RC2"
 
-scalaVersion := "2.11.4"
+scalaVersion := "2.11.6"
 
 resolvers := ("Atlassian Releases" at "https://maven.atlassian.com/public/") +: resolvers.value
 
 resolvers += Resolver.sonatypeRepo("snapshots")
 
 libraryDependencies ++= Seq(
-  "com.mohiva" %% "play-silhouette" % "2.0-RC1",
+  "com.mohiva" %% "play-silhouette" % "2.0-RC2",
   "net.codingwell" %% "scala-guice" % "4.0.0-beta5",
   cache
 )
