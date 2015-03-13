@@ -2,19 +2,20 @@ package controllers
 
 import javax.inject.Inject
 
-import com.mohiva.play.silhouette.api.exceptions.AuthenticationException
+import com.mohiva.play.silhouette.api.exceptions.{ConfigurationException, ProviderException}
 import com.mohiva.play.silhouette.api.services.AuthInfoService
 import com.mohiva.play.silhouette.api.util.Credentials
-import com.mohiva.play.silhouette.api.{ Environment, LoginEvent, Silhouette }
+import com.mohiva.play.silhouette.api.{Environment, LoginEvent, Silhouette}
 import com.mohiva.play.silhouette.impl
 import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
+import com.mohiva.play.silhouette.impl.exceptions.IdentityNotFoundException
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import models.User
 import models.services.UserService
 import play.api.i18n.Messages
-import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import play.api.mvc.{ Action, RequestHeader }
+import play.api.libs.functional.syntax._
+import play.api.mvc.Action
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -39,18 +40,6 @@ class CredentialsAuthController @Inject() (
   )(Credentials.apply _)
 
   /**
-   * Implement this to return a result when the user is not authenticated.
-   *
-   * As defined by RFC 2616, the status code of the response should be 401 Unauthorized.
-   *
-   * @param request The request header.
-   * @return The result to send to the client.
-   */
-  override protected def notAuthenticated(request: RequestHeader) = {
-    Some(Future.successful(Unauthorized(Json.obj("message" -> Messages("invalid.credentials")))))
-  }
-
-  /**
    * Authenticates a user against the credentials provider.
    *
    * @return The result to display.
@@ -59,7 +48,7 @@ class CredentialsAuthController @Inject() (
     request.body.validate[Credentials].map { credentials =>
       (env.providers.get(CredentialsProvider.ID) match {
         case Some(p: CredentialsProvider) => p.authenticate(credentials)
-        case _ => Future.failed(new AuthenticationException(s"Cannot find credentials provider"))
+        case _ => Future.failed(new ConfigurationException(s"Cannot find credentials provider"))
       }).flatMap { loginInfo =>
         userService.retrieve(loginInfo).flatMap {
           case Some(user) => env.authenticatorService.create(user.loginInfo).flatMap { authenticator =>
@@ -68,9 +57,11 @@ class CredentialsAuthController @Inject() (
               Future.successful(Ok(Json.obj("token" -> token)))
             }
           }
-          case None => Future.failed(new AuthenticationException("Couldn't find user"))
+          case None => Future.failed(new IdentityNotFoundException("Couldn't find user"))
         }
-      }.recoverWith(exceptionHandler)
+      }.recover {
+        case e: ProviderException => Unauthorized(Json.obj("message" -> Messages("invalid.credentials")))
+      }
     }.recoverTotal {
       case error =>
         Future.successful(Unauthorized(Json.obj("message" -> Messages("invalid.credentials"))))

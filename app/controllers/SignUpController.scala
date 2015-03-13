@@ -30,7 +30,8 @@ class SignUpController @Inject() (
   implicit val env: Environment[User, JWTAuthenticator],
   val userService: UserService,
   val authInfoService: AuthInfoService,
-  val passwordHasher: PasswordHasher) extends Silhouette[User, JWTAuthenticator] {
+  val passwordHasher: PasswordHasher)
+  extends Silhouette[User, JWTAuthenticator] {
 
   /**
    * Registers a new user.

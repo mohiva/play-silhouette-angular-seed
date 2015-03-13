@@ -3,12 +3,13 @@ package controllers
 import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api._
-import com.mohiva.play.silhouette.api.exceptions.AuthenticationException
+import com.mohiva.play.silhouette.api.exceptions.ProviderException
 import com.mohiva.play.silhouette.api.services.AuthInfoService
 import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
 import com.mohiva.play.silhouette.impl.providers._
 import models.User
 import models.services.UserService
+import play.api.i18n.Messages
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.Json
 import play.api.mvc.Action
@@ -23,7 +24,8 @@ import scala.concurrent.Future
 class SocialAuthController @Inject() (
   val env: Environment[User, JWTAuthenticator],
   val userService: UserService,
-  val authInfoService: AuthInfoService) extends Silhouette[User, JWTAuthenticator] {
+  val authInfoService: AuthInfoService)
+  extends Silhouette[User, JWTAuthenticator] {
 
   /**
    * Authenticates a user against a social provider.
@@ -47,7 +49,11 @@ class SocialAuthController @Inject() (
             Ok(Json.obj("token" -> token))
           }
         }
-      case _ => Future.failed(new AuthenticationException(s"Cannot authenticate with unexpected social provider $provider"))
-    }).recoverWith(exceptionHandler)
+      case _ => Future.failed(new ProviderException(s"Cannot authenticate with unexpected social provider $provider"))
+    }).recover {
+      case e: ProviderException =>
+        logger.error("Unexpected provider error", e)
+        Unauthorized(Json.obj("message" -> Messages("could.not.authenticate")))
+    }
   }
 }
