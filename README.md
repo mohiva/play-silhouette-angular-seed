@@ -49,8 +49,49 @@ Consulate the [Silhouette documentation](http://silhouette.mohiva.com/docs) for 
   ```
   bundle install -j4 --path .bundle
   ```
+2. Configure social providers 
+  
+  To configure the social providers for [Satellizer](https://github.com/sahat/satellizer), Open the file "~\ui\app\scripts\app.js" and input your providers clientId: 
+  ```
+   // Facebook
+  $authProvider.facebook({
+    clientId: 'your-client-id',
+    ...
+  });
+   // Google
+  $authProvider.google({
+    clientId: 'your-client-id',
+    ...
+  });
+  ...
+  ```
+  If you are using Heroku Update the "~\app.json" file with your clientSecret and clientID 
+  ```
+    "env": {
+    "BUILDPACK_URL": "https://github.com/heroku/heroku-buildpack-multi",
+    "NPM_CONFIG_PRODUCTION": "false",
+    "PLAY_CONF_FILE": "application.conf",
+    "PLAY_APP_SECRET": "changeme",
+    "FACEBOOK_CLIENT_ID": "",
+    "FACEBOOK_CLIENT_SECRET": "",
+    "GOOGLE_CLIENT_ID": "",
+    "GOOGLE_CLIENT_SECRET": "",
+    "TWITTER_CONSUMER_KEY": "",
+    "TWITTER_CONSUMER_SECRET": ""
+  }
+  ```
+  
+  Since the app.json is a Heroku specific file, to test social providers on localhost, you can either set your windows environment variables as defined in the app.json "env" section or manually update the "~\conf\silhouette.conf" file directly with your client id and client secret.
+  ```
+  # Google provider
+  google.accessTokenURL="https://accounts.google.com/o/oauth2/token"
+  google.redirectURL="http://localhost:9000"
+  google.clientID="your-client-id"
+  google.clientSecret="your-client-secret"
+  google.scope="profile email"
+  ```
 
-2. Start sbt and run the following:
+3. Start sbt and run the following:
 
   ```
   $ update
