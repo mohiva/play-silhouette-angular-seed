@@ -10,7 +10,7 @@ import scalariform.formatter.preferences._
 
 name := "play-silhouette-angular-seed"
 
-version := "2.0"
+version := "2.1-SNAPSHOT"
 
 scalaVersion := "2.11.6"
 
