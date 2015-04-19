@@ -53,8 +53,8 @@ class CredentialsAuthController @Inject() (
         userService.retrieve(loginInfo).flatMap {
           case Some(user) => env.authenticatorService.create(user.loginInfo).flatMap { authenticator =>
             env.eventBus.publish(LoginEvent(user, request, request2lang))
-            env.authenticatorService.init(authenticator).flatMap { token =>
-              Future.successful(Ok(Json.obj("token" -> token)))
+            env.authenticatorService.init(authenticator).map { token =>
+              Ok(Json.obj("token" -> token))
             }
           }
           case None => Future.failed(new IdentityNotFoundException("Couldn't find user"))
