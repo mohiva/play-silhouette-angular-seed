@@ -1,4 +1,4 @@
-@()(implicit request: RequestHeader)
+@()(implicit request: RequestHeader, messages: Messages)
 
 @import forms.SignUpForm.form
 @implicitField = @{ helper.FieldConstructor(fields.constructor.f) }

@@ -4,7 +4,9 @@ import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api.{ Environment, LogoutEvent, Silhouette }
 import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
+import com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry
 import models.User
+import play.api.i18n.MessagesApi
 import play.api.libs.json.Json
 
 import scala.concurrent.Future
@@ -12,11 +14,15 @@ import scala.concurrent.Future
 /**
  * The basic application controller.
  *
+ * @param messagesApi The Play messages API.
  * @param env The Silhouette environment.
+ * @param socialProviderRegistry The social provider registry.
  */
-class ApplicationController @Inject() (implicit val env: Environment[User, JWTAuthenticator])
+class ApplicationController @Inject() (
+  val messagesApi: MessagesApi,
+  val env: Environment[User, JWTAuthenticator],
+  socialProviderRegistry: SocialProviderRegistry)
   extends Silhouette[User, JWTAuthenticator] {
-
   /**
    * Returns the user.
    *
@@ -30,8 +36,8 @@ class ApplicationController @Inject() (implicit val env: Environment[User, JWTAu
    * Manages the sign out action.
    */
   def signOut = SecuredAction.async { implicit request =>
-    env.eventBus.publish(LogoutEvent(request.identity, request, request2lang))
-    request.authenticator.discard(Future.successful(Ok))
+    env.eventBus.publish(LogoutEvent(request.identity, request, request2Messages))
+    env.authenticatorService.discard(request.authenticator, Ok)
   }
 
   /**
@@ -44,7 +50,7 @@ class ApplicationController @Inject() (implicit val env: Environment[User, JWTAu
     template match {
       case "home" => Ok(views.html.home())
       case "signUp" => Ok(views.html.signUp())
-      case "signIn" => Ok(views.html.signIn())
+      case "signIn" => Ok(views.html.signIn(socialProviderRegistry))
       case "navigation" => Ok(views.html.navigation.render())
       case _ => NotFound
     }

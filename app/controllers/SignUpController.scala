@@ -4,14 +4,15 @@ import java.util.UUID
 import javax.inject.Inject
 
 import com.mohiva.play.silhouette.api._
-import com.mohiva.play.silhouette.api.services.AuthInfoService
+import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
+import com.mohiva.play.silhouette.api.services.AvatarService
 import com.mohiva.play.silhouette.api.util.PasswordHasher
 import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
 import com.mohiva.play.silhouette.impl.providers.CredentialsProvider
 import forms.SignUpForm
 import models.User
 import models.services.UserService
-import play.api.i18n.Messages
+import play.api.i18n.{ MessagesApi, Messages }
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.Json
 import play.api.mvc.Action
@@ -21,16 +22,20 @@ import scala.concurrent.Future
 /**
  * The sign up controller.
  *
+ * @param messagesApi The Play messages API.
  * @param env The Silhouette environment.
  * @param userService The user service implementation.
- * @param authInfoService The auth info service implementation.
+ * @param authInfoRepository The auth info repository implementation.
+ * @param avatarService The avatar service implementation.
  * @param passwordHasher The password hasher implementation.
  */
 class SignUpController @Inject() (
-  implicit val env: Environment[User, JWTAuthenticator],
-  val userService: UserService,
-  val authInfoService: AuthInfoService,
-  val passwordHasher: PasswordHasher)
+  val messagesApi: MessagesApi,
+  val env: Environment[User, JWTAuthenticator],
+  userService: UserService,
+  authInfoRepository: AuthInfoRepository,
+  avatarService: AvatarService,
+  passwordHasher: PasswordHasher)
   extends Silhouette[User, JWTAuthenticator] {
 
   /**
@@ -56,13 +61,14 @@ class SignUpController @Inject() (
             avatarURL = None
           )
           for {
-            user <- userService.save(user)
-            authInfo <- authInfoService.save(loginInfo, authInfo)
+            avatar <- avatarService.retrieveURL(data.email)
+            user <- userService.save(user.copy(avatarURL = avatar))
+            authInfo <- authInfoRepository.add(loginInfo, authInfo)
             authenticator <- env.authenticatorService.create(loginInfo)
             token <- env.authenticatorService.init(authenticator)
           } yield {
-            env.eventBus.publish(SignUpEvent(user, request, request2lang))
-            env.eventBus.publish(LoginEvent(user, request, request2lang))
+            env.eventBus.publish(SignUpEvent(user, request, request2Messages))
+            env.eventBus.publish(LoginEvent(user, request, request2Messages))
             Ok(Json.obj("token" -> token))
           }
       }
