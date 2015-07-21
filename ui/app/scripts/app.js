@@ -72,6 +72,8 @@ app.config(function ($urlRouterProvider, $stateProvider, $httpProvider, $authPro
   $authProvider.tokenName = 'token';
   $authProvider.tokenPrefix = 'satellizer'; // Local Storage name prefix
   $authProvider.authHeader = 'X-Auth-Token';
+  $authProvider.platform = 'browser';
+  $authProvider.storage = 'localStorage';
 
   // Facebook
   $authProvider.facebook({

@@ -1,10 +1,7 @@
 @(socialProviders: com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry)(implicit request: RequestHeader, messages: Messages)
 
-
-@import com.mohiva.play.silhouette.impl.providers._
 @import forms.SignInForm.form
-@import play.api.Play
-@import play.api.Play.current
+
 @implicitField = @{ helper.FieldConstructor(fields.constructor.f) }
 
 <fieldset class="col-md-6 col-md-offset-3" ng-controller="SignInCtrl">
