@@ -1,5 +1,4 @@
 import com.tuplejump.sbt.yeoman.Yeoman
-import com.typesafe.sbt.SbtScalariform._
 
 import scalariform.formatter.preferences._
 
@@ -22,6 +21,7 @@ libraryDependencies ++= Seq(
   "org.webjars" % "jquery" % "1.11.0",
   "net.codingwell" %% "scala-guice" % "4.0.0",
   "net.ceedubs" %% "ficus" % "1.1.2",
+  "com.adrianhurt" %% "play-bootstrap3" % "0.4.4-P24",
   "com.mohiva" %% "play-silhouette-testkit" % "3.0.0" % "test",
   cache,
   filters

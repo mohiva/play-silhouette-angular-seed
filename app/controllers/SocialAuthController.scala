@@ -9,12 +9,15 @@ import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
 import com.mohiva.play.silhouette.impl.providers._
 import models.User
 import models.services.UserService
+import play.api.cache.CacheApi
 import play.api.i18n.{ MessagesApi, Messages }
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.json.Json
-import play.api.mvc.Action
+import play.api.mvc.{AnyContent, Result, Request, Action}
 
 import scala.concurrent.Future
+import scala.concurrent.duration._
+import scala.language.postfixOps
 
 /**
  * The social auth controller.
@@ -30,7 +33,8 @@ class SocialAuthController @Inject() (
   val env: Environment[User, JWTAuthenticator],
   userService: UserService,
   authInfoRepository: AuthInfoRepository,
-  socialProviderRegistry: SocialProviderRegistry)
+  socialProviderRegistry: SocialProviderRegistry,
+  cache: CacheApi)
   extends Silhouette[User, JWTAuthenticator] with Logger {
 
   /**
@@ -39,7 +43,7 @@ class SocialAuthController @Inject() (
    * @param provider The ID of the provider to authenticate against.
    * @return The result to display.
    */
-  def authenticate(provider: String) = Action.async { implicit request =>
+  def authenticate(provider: String) = Action.async { r => cacheAuthTokenForOauth1(r) { implicit request =>
     (socialProviderRegistry.get[SocialProvider](provider) match {
       case Some(p: SocialProvider with CommonSocialProfileBuilder) =>
         p.authenticate().flatMap {
@@ -60,6 +64,30 @@ class SocialAuthController @Inject() (
       case e: ProviderException =>
         logger.error("Unexpected provider error", e)
         Unauthorized(Json.obj("message" -> Messages("could.not.authenticate")))
+    }
+  }}
+
+  /**
+   * Satellizer executes multiple requests to the same application endpoints for OAuth1.
+   *
+   * So this function caches the response from the OAuth provider and returns it on the second
+   * request. Not nice, but it works as a temporary workaround until the bug is fixed.
+   *
+   * @param request The current request.
+   * @param f The action to execute.
+   * @return A result.
+   * @see https://github.com/sahat/satellizer/issues/287
+   */
+  private def cacheAuthTokenForOauth1(request: Request[AnyContent])(f: Request[AnyContent] => Future[Result]): Future[Result] = {
+    request.getQueryString("oauth_token") -> request.getQueryString("oauth_verifier") match {
+      case (Some(token), Some(verifier)) => cache.get[Result](token + "-" + verifier) match {
+        case Some(result) => Future.successful(result)
+        case None => f(request).map { result =>
+          cache.set(token + "-" + verifier, result, 1 minute)
+          result
+        }
+      }
+      case _ => f(request)
     }
   }
 }

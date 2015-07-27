@@ -1,77 +1,39 @@
 @()(implicit request: RequestHeader, messages: Messages)
 
+@import b3.inline.fieldConstructor
 @import forms.SignUpForm.form
-@implicitField = @{ helper.FieldConstructor(fields.constructor.f) }
 
 <fieldset class="col-md-6 col-md-offset-3" ng-controller="SignUpCtrl">
-    <legend >Sign up for a new account</legend>
+    <legend >@Messages("sign.up.account")</legend>
     <form name="form" id="sign-up-form" ng-submit="submit()" ng-model-options="{ updateOn: 'submit blur' }" autocomplete="off">
 
-        <div class="form-group has-feedback">
-            @helper.inputText(form("firstName"),
-                'placeholder -> "First name",
-                'class -> "form-control input-lg",
-                '_label -> "",
-                'required -> "",
-                Symbol("ng-model") -> "firstName"
-            )
-            <span class="ion-person form-control-feedback"></span>
-            <div class="help-block text-danger" ng-if="form.firstName.$dirty" ng-messages="form.firstName.$error">
-                <div ng-message="required">@Messages("error.required")</div>
-            </div>
+        @b3.text(form("firstName"), '_hiddenLabel -> Messages("first.name"), 'placeholder -> Messages("first.name"), 'class -> "form-control input-lg", 'required -> "", Symbol("ng-model") -> "firstName")
+        <div class="help-block text-danger" ng-if="form.firstName.$dirty" ng-messages="form.firstName.$error">
+            <div ng-message="required">@Messages("error.required")</div>
         </div>
 
-        <div class="form-group has-feedback">
-            @helper.inputText(form("lastName"),
-                'placeholder -> "Last name",
-                'class -> "form-control input-lg",
-                '_label -> "",
-                'required -> "",
-                Symbol("ng-model") -> "lastName"
-            )
-            <span class="ion-person form-control-feedback"></span>
-            <div class="help-block text-danger" ng-if="form.lastName.$dirty" ng-messages="form.lastName.$error">
-                <div ng-message="required">@Messages("error.required")</div>
-            </div>
+        @b3.text(form("lastName"), '_hiddenLabel -> Messages("last.name"), 'placeholder -> Messages("last.name"), 'class -> "form-control input-lg", 'required -> "", Symbol("ng-model") -> "lastName")
+        <div class="help-block text-danger" ng-if="form.lastName.$dirty" ng-messages="form.lastName.$error">
+            <div ng-message="required">@Messages("error.required")</div>
         </div>
 
-        <div class="form-group has-feedback">
-            @helper.inputText(form("email"),
-                'type -> "email",
-                'placeholder -> "Email",
-                'class -> "form-control input-lg",
-                '_label -> "",
-                'required -> "",
-                'email -> "",
-                Symbol("ng-model") -> "email"
-            )
-            <span class="ion-at form-control-feedback"></span>
-            <div class="help-block text-danger" ng-if="form.email.$dirty" ng-messages="form.email.$error">
-                <div ng-message="required">@Messages("error.required")</div>
-                <div ng-message="email">@Messages("error.email")</div>
-            </div>
+        @b3.text(form("email"), '_hiddenLabel -> Messages("email"), 'placeholder -> Messages("email"), 'class -> "form-control input-lg", 'required -> "", Symbol("ng-model") -> "email")
+        <div class="help-block text-danger" ng-if="form.email.$dirty" ng-messages="form.email.$error">
+            <div ng-message="required">@Messages("error.required")</div>
+            <div ng-message="email">@Messages("error.email")</div>
         </div>
 
-        <div class="form-group has-feedback">
-            @helper.inputPassword(form("password"),
-                'placeholder -> "Password",
-                'class -> "form-control input-lg",
-                '_label -> "",
-                'required -> "",
-                Symbol("ng-model") -> "password"
-            )
-            <span class="ion-key form-control-feedback"></span>
-            <div class="help-block text-danger" ng-if="form.password.$dirty" ng-messages="form.password.$error">
-                <div ng-message="required">@Messages("error.required")</div>
-            </div>
+        @b3.password(form("password"), '_hiddenLabel -> Messages("password"), 'placeholder -> Messages("password"), 'class -> "form-control input-lg", 'required -> "", Symbol("ng-model") -> "password")
+        <div class="help-block text-danger" ng-if="form.password.$dirty" ng-messages="form.password.$error">
+            <div ng-message="required">@Messages("error.required")</div>
         </div>
 
         <div class="form-group">
-            <button ng-disabled="form.$invalid" id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">Sign up</button>
+            <button ng-disabled="form.$invalid" id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">@Messages("sign.up")</button>
         </div>
 
         <div>
-            <p class="already-member">Already a member? <a ui-sref="signIn">Sign in now</a></p>
+            <p class="already-member">@Messages("already.a.member") <a ui-sref="signIn">@Messages("sign.in.now")</a></p>
         </div>
     </form>
 </fieldset>

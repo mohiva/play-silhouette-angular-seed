@@ -11,7 +11,8 @@ app.controller('SignInCtrl', ['$scope', '$alert', '$auth', function($scope, $ale
    * Submits the login form.
    */
   $scope.submit = function() {
-    $auth.login({ email: $scope.email, password: $scope.password })
+    $auth.setStorage($scope.rememberMe ? 'localStorage' : 'sessionStorage');
+    $auth.login({ email: $scope.email, password: $scope.password, rememberMe: $scope.rememberMe })
       .then(function() {
         $alert({
           content: 'You have successfully signed in',

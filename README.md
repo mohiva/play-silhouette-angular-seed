@@ -19,10 +19,11 @@ Or you can find a running example of this template under the following URL: http
 * Sign Up
 * Sign In (Credentials)
 * JWT authentication
-* Social Auth (Facebook, Google+, Twitter)
+* Social Auth (Facebook, Google+, VK, Twitter, Xing)
 * Dependency Injection with Guice
 * Publishing Events
 * Avatar service
+* Remember me functionality
 
 ## Documentation
 
