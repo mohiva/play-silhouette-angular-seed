@@ -127,6 +127,7 @@ app.config(function ($urlRouterProvider, $stateProvider, $httpProvider, $authPro
     clientId: '4782746',
     url: '/authenticate/vk',
     authorizationEndpoint: 'http://oauth.vk.com/authorize',
+    redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
     name: 'vk',
     scope: 'email',
     scopeDelimiter: ' ',
