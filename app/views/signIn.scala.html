@@ -1,61 +1,42 @@
 @(socialProviders: com.mohiva.play.silhouette.impl.providers.SocialProviderRegistry)(implicit request: RequestHeader, messages: Messages)
 
 @import forms.SignInForm.form
-
-@implicitField = @{ helper.FieldConstructor(fields.constructor.f) }
+@import b3.inline.fieldConstructor
 
 <fieldset class="col-md-6 col-md-offset-3" ng-controller="SignInCtrl">
-    <legend >Sign in with your credentials</legend>
+    <legend>@Messages("sign.in.credentials")</legend>
     <form name="form" id="sign-in-form" ng-submit="submit()" ng-model-options="{ updateOn: 'submit blur' }" autocomplete="off">
 
-        <div class="form-group has-feedback">
-            @helper.inputText(form("identifier"),
-                'type -> "email",
-                'placeholder -> "Email",
-                'class -> "form-control input-lg",
-                '_label -> "",
-                'required -> "",
-                'email -> "",
-                Symbol("ng-model") -> "email"
-            )
-            <span class="ion-at form-control-feedback"></span>
-            <div class="help-block text-danger" ng-if="form.identifier.$dirty" ng-messages="form.identifier.$error">
-                <div ng-message="required">@Messages("error.required")</div>
-                <div ng-message="email">@Messages("error.email")</div>
-            </div>
+        @b3.email(form("email"), '_hiddenLabel -> Messages("email"), 'placeholder -> Messages("email"), 'class -> "form-control input-lg", 'required -> "", Symbol("ng-model") -> "email")
+        <div class="help-block text-danger" ng-if="form.email.$dirty" ng-messages="form.email.$error">
+            <div ng-message="required">@Messages("error.required")</div>
+            <div ng-message="email">@Messages("error.email")</div>
         </div>
 
-        <div class="form-group has-feedback">
-            @helper.inputPassword(form("password"),
-                'placeholder -> "Password",
-                'class -> "form-control input-lg",
-                '_label -> "",
-                'required -> "",
-                Symbol("ng-model") -> "password"
-            )
-            <span class="ion-key form-control-feedback"></span>
-            <div class="help-block text-danger" ng-if="form.password.$dirty" ng-messages="form.password.$error">
-                <div ng-message="required">@Messages("error.required")</div>
-            </div>
+        @b3.password(form("password"), '_hiddenLabel -> Messages("password"), 'placeholder -> Messages("password"), 'class -> "form-control input-lg", 'required -> "", Symbol("ng-model") -> "password")
+        <div class="help-block text-danger" ng-if="form.password.$dirty" ng-messages="form.password.$error">
+            <div ng-message="required">@Messages("error.required")</div>
         </div>
+
+        @b3.checkbox(form("rememberMe"), '_text -> Messages("remember.me"), 'checked -> true, Symbol("ng-model") -> "rememberMe", Symbol("ng-init") -> "rememberMe=true")
 
         <div class="form-group">
-            <button ng-disabled="form.$invalid" id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">Sign in</button>
+            <button ng-disabled="form.$invalid" id="submit" type="submit" value="submit" class="btn btn-lg btn-primary btn-block">@Messages("sign.in")</button>
         </div>
 
         <div>
-            <p class="not-a-member">Not a member? <a ui-sref="signUp">Sign up now</a></p>
+            <p class="not-a-member">@Messages("not.a.member") <a ui-sref="signUp">@Messages("sign.up.now")</a></p>
         </div>
 
         @if(socialProviders.providers.nonEmpty) {
-                <div class="social-providers">
-                    <p>Or use your existing account on one of the following services to sign in:</p>
-                    <div>
-                    @for(p <- socialProviders.providers) {
-                        <a ng-click="authenticate('@p.id')" class="provider @p.id"><img src="@routes.Assets.at(s"images/providers/${p.id}.png")" style="width:64px;height:64px;"></a>
-                    }
-                    </div>
+            <div class="social-providers">
+                <p>@Messages("or.use.social")</p>
+                <div>
+                @for(p <- socialProviders.providers) {
+                    <a ng-click="authenticate('@p.id')" class="provider @p.id" title="@Messages(p.id)"><img src="@routes.Assets.at(s"images/providers/${p.id}.png")" width="64px" height="64px" alt="@Messages(p.id)"></a>
+                }
                 </div>
+            </div>
         }
     </form>
 </fieldset>

@@ -23,6 +23,7 @@ class ApplicationController @Inject() (
   val env: Environment[User, JWTAuthenticator],
   socialProviderRegistry: SocialProviderRegistry)
   extends Silhouette[User, JWTAuthenticator] {
+
   /**
    * Returns the user.
    *
@@ -51,7 +52,7 @@ class ApplicationController @Inject() (
       case "home" => Ok(views.html.home())
       case "signUp" => Ok(views.html.signUp())
       case "signIn" => Ok(views.html.signIn(socialProviderRegistry))
-      case "navigation" => Ok(views.html.navigation.render())
+      case "navigation" => Ok(views.html.navigation())
       case _ => NotFound
     }
   }

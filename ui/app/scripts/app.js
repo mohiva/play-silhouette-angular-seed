@@ -6,6 +6,7 @@
 var app = angular.module('uiApp', [
   'ngResource',
   'ngMessages',
+  'ngCookies',
   'ui.router',
   'mgcrea.ngStrap',
   'satellizer'
@@ -29,12 +30,22 @@ app.run(function($rootScope) {
  */
 app.config(function ($urlRouterProvider, $stateProvider, $httpProvider, $authProvider) {
 
-  $urlRouterProvider
-    .when('', 'signIn')
-    .when('/', 'signIn');
+  $urlRouterProvider.otherwise('/home');
 
   $stateProvider
-    .state('home', { url: '/home', templateUrl: '/views/home.html' })
+    .state('home', { url: '/home', templateUrl: '/views/home.html', resolve: {
+      authenticated: function($q, $location, $auth) {
+        var deferred = $q.defer();
+
+        if (!$auth.isAuthenticated()) {
+          $location.path('/signIn');
+        } else {
+          deferred.resolve();
+        }
+
+        return deferred.promise;
+      }
+    }})
     .state('signUp', { url: '/signUp', templateUrl: '/views/signUp.html' })
     .state('signIn', { url: '/signIn', templateUrl: '/views/signIn.html' })
     .state('signOut', { url: '/signOut', template: null,  controller: 'SignOutCtrl' });
@@ -42,9 +53,19 @@ app.config(function ($urlRouterProvider, $stateProvider, $httpProvider, $authPro
   $httpProvider.interceptors.push(function($q, $injector) {
     return {
       request: function(request) {
+        // Add auth token for Silhouette if user is authenticated
         var $auth = $injector.get('$auth');
         if ($auth.isAuthenticated()) {
           request.headers['X-Auth-Token'] = $auth.getToken();
+        }
+
+        // Add CSRF token for the Play CSRF filter
+        var cookies = $injector.get('$cookies');
+        var token = cookies.get('PLAY_CSRF_TOKEN');
+        if (token) {
+          // Play looks for a token with the name Csrf-Token
+          // https://www.playframework.com/documentation/2.4.x/ScalaCsrf
+          request.headers['Csrf-Token'] = token;
         }
 
         return request;
@@ -77,10 +98,8 @@ app.config(function ($urlRouterProvider, $stateProvider, $httpProvider, $authPro
 
   // Facebook
   $authProvider.facebook({
-    clientId: '1503078423241610',
+    clientId: '',
     url: '/authenticate/facebook',
-    authorizationEndpoint: 'https://www.facebook.com/dialog/oauth',
-    redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host + '/',
     scope: 'email',
     scopeDelimiter: ',',
     requiredUrlParams: ['display', 'scope'],
@@ -91,10 +110,8 @@ app.config(function ($urlRouterProvider, $stateProvider, $httpProvider, $authPro
 
   // Google
   $authProvider.google({
-    clientId: '526391676642-nbnoavs078shhti3ruk8jhl4nenv0g04.apps.googleusercontent.com',
+    clientId: '',
     url: '/authenticate/google',
-    authorizationEndpoint: 'https://accounts.google.com/o/oauth2/auth',
-    redirectUri: window.location.origin || window.location.protocol + '//' + window.location.host,
     scope: ['profile', 'email'],
     scopePrefix: 'openid',
     scopeDelimiter: ' ',
@@ -105,10 +122,30 @@ app.config(function ($urlRouterProvider, $stateProvider, $httpProvider, $authPro
     popupOptions: { width: 580, height: 400 }
   });
 
+  // VK
+  $authProvider.oauth2({
+    clientId: '',
+    url: '/authenticate/vk',
+    authorizationEndpoint: 'http://oauth.vk.com/authorize',
+    name: 'vk',
+    scope: 'email',
+    scopeDelimiter: ' ',
+    requiredUrlParams: ['display', 'scope'],
+    display: 'popup',
+    popupOptions: { width: 495, height: 400 }
+  });
+
   // Twitter
   $authProvider.twitter({
     url: '/authenticate/twitter',
     type: '1.0',
     popupOptions: { width: 495, height: 645 }
+  });
+
+  // Xing
+  $authProvider.oauth1({
+    url: '/authenticate/xing',
+    name: 'xing',
+    popupOptions: { width: 495, height: 500 }
   });
 });

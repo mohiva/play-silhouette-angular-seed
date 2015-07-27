@@ -27,3 +27,6 @@ PLATFORMS
 DEPENDENCIES
   compass (= 1.0.1)
   sass (= 3.4.9)
+
+BUNDLED WITH
+   1.10.3

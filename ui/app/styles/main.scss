@@ -50,6 +50,8 @@ a {
 .facebook { background: #3B5998; }
 .google { background: #D14836; }
 .twitter { background: #00ACED; }
+.xing { background: #006567; }
+.vk { background: #567ca4; }
 
 .social-providers,
 .sign-in-now,
@@ -85,23 +87,6 @@ a {
   border-radius: 2px;
   outline: none;
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
-}
-
-[class^='ion-'] {
-  font-size: 1.2em;
-}
-
-.has-feedback .form-control-feedback {
-  top: 14px;
-  left: 0;
-  width: 46px;
-  height: 46px;
-  line-height: 46px;
-  color: #555;
-}
-
-.has-feedback .form-control {
-  padding-left: 42.5px;
 }
 
 .btn {
