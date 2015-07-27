@@ -98,7 +98,7 @@ app.config(function ($urlRouterProvider, $stateProvider, $httpProvider, $authPro
 
   // Facebook
   $authProvider.facebook({
-    clientId: '',
+    clientId: '1503078423241610',
     url: '/authenticate/facebook',
     scope: 'email',
     scopeDelimiter: ',',
@@ -110,7 +110,7 @@ app.config(function ($urlRouterProvider, $stateProvider, $httpProvider, $authPro
 
   // Google
   $authProvider.google({
-    clientId: '',
+    clientId: '526391676642-nbnoavs078shhti3ruk8jhl4nenv0g04.apps.googleusercontent.com',
     url: '/authenticate/google',
     scope: ['profile', 'email'],
     scopePrefix: 'openid',
@@ -124,7 +124,7 @@ app.config(function ($urlRouterProvider, $stateProvider, $httpProvider, $authPro
 
   // VK
   $authProvider.oauth2({
-    clientId: '',
+    clientId: '4782746',
     url: '/authenticate/vk',
     authorizationEndpoint: 'http://oauth.vk.com/authorize',
     name: 'vk',
