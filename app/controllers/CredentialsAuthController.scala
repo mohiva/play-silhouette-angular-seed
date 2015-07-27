@@ -48,7 +48,7 @@ class CredentialsAuthController @Inject() (
   extends Silhouette[User, JWTAuthenticator] {
 
   /**
-   * Converts the JSON into a [[SignInForm.Data]] object.
+   * Converts the JSON into a `SignInForm.Data` object.
    */
   implicit val dataReads = (
     (__ \ 'email).read[String] and
