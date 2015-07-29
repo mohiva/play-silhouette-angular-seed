@@ -73,6 +73,8 @@ app.config(function ($urlRouterProvider, $stateProvider, $httpProvider, $authPro
 
       responseError: function(rejection) {
         if (rejection.status === 401) {
+          var $auth = $injector.get('$auth');
+          $auth.logout();
           $injector.get('$state').go('signIn');
         }
         return $q.reject(rejection);
