@@ -4,9 +4,9 @@ import scalariform.formatter.preferences._
 
 name := "play-silhouette-angular-seed"
 
-version := "3.0.0"
+version := "4.0.0-BETA4"
 
-scalaVersion := "2.11.7"
+scalaVersion := "2.11.8"
 
 resolvers := ("Atlassian Releases" at "https://maven.atlassian.com/public/") +: resolvers.value
 
@@ -14,20 +14,24 @@ resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases"
 
 resolvers += Resolver.sonatypeRepo("snapshots")
 
+resolvers += Resolver.jcenterRepo
+
 libraryDependencies ++= Seq(
-  "com.mohiva" %% "play-silhouette" % "3.0.0",
-  "org.webjars" %% "webjars-play" % "2.4.0",
+  "com.mohiva" %% "play-silhouette" % "4.0.0-BETA4",
+  "com.mohiva" %% "play-silhouette-persistence-memory" % "4.0.0-BETA4",
+  "com.mohiva" %% "play-silhouette-password-bcrypt" % "4.0.0-BETA4",
+  "org.webjars" %% "webjars-play" % "2.5.0",
   "org.webjars" % "bootstrap" % "3.1.1",
   "org.webjars" % "jquery" % "1.11.0",
-  "net.codingwell" %% "scala-guice" % "4.0.0",
-  "net.ceedubs" %% "ficus" % "1.1.2",
+  "net.codingwell" %% "scala-guice" % "4.0.1",
+  "com.iheart" %% "ficus" % "1.2.3",
   "com.adrianhurt" %% "play-bootstrap3" % "0.4.4-P24",
-  "com.mohiva" %% "play-silhouette-testkit" % "3.0.0" % "test",
+  "com.mohiva" %% "play-silhouette-testkit" % "4.0.0-BETA4" % "test",
   cache,
   filters
 )
 
-lazy val root = (project in file(".")).enablePlugins(PlayScala)
+lazy val root = (project in file(".")).enablePlugins(PlayScala, Yeoman)
 
 routesGenerator := InjectedRoutesGenerator
 
@@ -43,11 +47,6 @@ scalacOptions ++= Seq(
   "-Ywarn-nullary-override", // Warn when non-nullary overrides nullary, e.g. def foo() over def foo.
   "-Ywarn-numeric-widen" // Warn when numerics are widened.
 )
-
-//********************************************************
-// Yeoman settings
-//********************************************************
-Yeoman.yeomanSettings
 
 //********************************************************
 // Scalariform settings

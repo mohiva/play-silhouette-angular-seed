@@ -6,20 +6,19 @@ import com.mohiva.play.silhouette.api.Authenticator.Implicits._
 import com.mohiva.play.silhouette.api._
 import com.mohiva.play.silhouette.api.exceptions.ProviderException
 import com.mohiva.play.silhouette.api.repositories.AuthInfoRepository
-import com.mohiva.play.silhouette.api.util.{Clock, Credentials}
-import com.mohiva.play.silhouette.impl.authenticators.JWTAuthenticator
+import com.mohiva.play.silhouette.api.util.{ Clock, Credentials }
 import com.mohiva.play.silhouette.impl.exceptions.IdentityNotFoundException
 import com.mohiva.play.silhouette.impl.providers._
 import forms.SignInForm
-import models.User
 import models.services.UserService
 import net.ceedubs.ficus.Ficus._
 import play.api.Configuration
-import play.api.i18n.{Messages, MessagesApi}
+import play.api.i18n.{ I18nSupport, Messages, MessagesApi }
 import play.api.libs.concurrent.Execution.Implicits._
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
-import play.api.mvc.Action
+import play.api.mvc.{ Action, Controller }
+import utils.auth.DefaultEnv
 
 import scala.concurrent.Future
 import scala.concurrent.duration._
@@ -28,7 +27,7 @@ import scala.concurrent.duration._
  * The credentials auth controller.
  *
  * @param messagesApi The Play messages API.
- * @param env The Silhouette environment.
+ * @param silhouette The Silhouette stack.
  * @param userService The user service implementation.
  * @param authInfoRepository The auth info repository implementation.
  * @param credentialsProvider The credentials provider.
@@ -38,14 +37,14 @@ import scala.concurrent.duration._
  */
 class CredentialsAuthController @Inject() (
   val messagesApi: MessagesApi,
-  val env: Environment[User, JWTAuthenticator],
+  silhouette: Silhouette[DefaultEnv],
   userService: UserService,
   authInfoRepository: AuthInfoRepository,
   credentialsProvider: CredentialsProvider,
   socialProviderRegistry: SocialProviderRegistry,
   configuration: Configuration,
   clock: Clock)
-  extends Silhouette[User, JWTAuthenticator] {
+  extends Controller with I18nSupport {
 
   /**
    * Converts the JSON into a `SignInForm.Data` object.
@@ -65,7 +64,7 @@ class CredentialsAuthController @Inject() (
     request.body.validate[SignInForm.Data].map { data =>
       credentialsProvider.authenticate(Credentials(data.email, data.password)).flatMap { loginInfo =>
         userService.retrieve(loginInfo).flatMap {
-          case Some(user) => env.authenticatorService.create(loginInfo).map {
+          case Some(user) => silhouette.env.authenticatorService.create(loginInfo).map {
             case authenticator if data.rememberMe =>
               val c = configuration.underlying
               authenticator.copy(
@@ -74,8 +73,8 @@ class CredentialsAuthController @Inject() (
               )
             case authenticator => authenticator
           }.flatMap { authenticator =>
-            env.eventBus.publish(LoginEvent(user, request, request2Messages))
-            env.authenticatorService.init(authenticator).map { token =>
+            silhouette.env.eventBus.publish(LoginEvent(user, request))
+            silhouette.env.authenticatorService.init(authenticator).map { token =>
               Ok(Json.obj("token" -> token))
             }
           }
