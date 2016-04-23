@@ -10,7 +10,7 @@
     "yo": "~1.7.0"
   },
   "engines": {
-    "node": "0.10.x"
+    "node": "5.10.x"
   },
   "scripts": {
     "postinstall": "cd ui && npm install && bower install"
