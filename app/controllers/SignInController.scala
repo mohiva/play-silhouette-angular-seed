@@ -24,7 +24,7 @@ import scala.concurrent.Future
 import scala.concurrent.duration._
 
 /**
- * The credentials auth controller.
+ * The `Sign In` controller.
  *
  * @param messagesApi The Play messages API.
  * @param silhouette The Silhouette stack.
@@ -35,7 +35,7 @@ import scala.concurrent.duration._
  * @param configuration The Play configuration.
  * @param clock The clock instance.
  */
-class CredentialsAuthController @Inject() (
+class SignInController @Inject() (
   val messagesApi: MessagesApi,
   silhouette: Silhouette[DefaultEnv],
   userService: UserService,
@@ -56,11 +56,11 @@ class CredentialsAuthController @Inject() (
   )(SignInForm.Data.apply _)
 
   /**
-   * Authenticates a user against the credentials provider.
+   * Handles the submitted JSON data.
    *
    * @return The result to display.
    */
-  def authenticate = Action.async(parse.json) { implicit request =>
+  def submit = Action.async(parse.json) { implicit request =>
     request.body.validate[SignInForm.Data].map { data =>
       credentialsProvider.authenticate(Credentials(data.email, data.password)).flatMap { loginInfo =>
         userService.retrieve(loginInfo).flatMap {

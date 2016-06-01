@@ -6,8 +6,8 @@ GET         /                                com.tuplejump.playYeoman.Yeoman.ind
 
 GET         /user                            controllers.ApplicationController.user
 GET         /signOut                         controllers.ApplicationController.signOut
-POST        /signIn                          controllers.CredentialsAuthController.authenticate
-POST        /signUp                          controllers.SignUpController.signUp
+POST        /signIn                          controllers.SignInController.submit
+POST        /signUp                          controllers.SignUpController.submit
 GET         /authenticate/:provider          controllers.SocialAuthController.authenticate(provider)
 POST        /authenticate/:provider          controllers.SocialAuthController.authenticate(provider)
 

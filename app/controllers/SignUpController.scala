@@ -20,7 +20,7 @@ import utils.auth.DefaultEnv
 import scala.concurrent.Future
 
 /**
- * The sign up controller.
+ * The `Sign Up` controller.
  *
  * @param messagesApi The Play messages API.
  * @param silhouette The Silhouette stack.
@@ -39,11 +39,11 @@ class SignUpController @Inject() (
   extends Controller with I18nSupport {
 
   /**
-   * Registers a new user.
+   * Handles the submitted JSON data.
    *
    * @return The result to display.
    */
-  def signUp = Action.async(parse.json) { implicit request =>
+  def submit = Action.async(parse.json) { implicit request =>
     request.body.validate[SignUpForm.Data].map { data =>
       val loginInfo = LoginInfo(CredentialsProvider.ID, data.email)
       userService.retrieve(loginInfo).flatMap {
