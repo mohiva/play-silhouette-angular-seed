@@ -5,24 +5,24 @@ import scalariform.formatter.preferences._
 
 name := "play-silhouette-angular-seed"
 
-version := "4.0.0-RC1"
+version := "4.0.0"
 
 scalaVersion := "2.11.8"
 
 resolvers += Resolver.jcenterRepo
 
 libraryDependencies ++= Seq(
-  "com.mohiva" %% "play-silhouette" % "4.0.0-RC1",
-  "com.mohiva" %% "play-silhouette-persistence" % "4.0.0-RC1",
-  "com.mohiva" %% "play-silhouette-password-bcrypt" % "4.0.0-RC1",
-  "com.mohiva" %% "play-silhouette-crypto-jca" % "4.0.0-RC1",
+  "com.mohiva" %% "play-silhouette" % "4.0.0",
+  "com.mohiva" %% "play-silhouette-persistence" % "4.0.0",
+  "com.mohiva" %% "play-silhouette-password-bcrypt" % "4.0.0",
+  "com.mohiva" %% "play-silhouette-crypto-jca" % "4.0.0",
   "org.webjars" %% "webjars-play" % "2.5.0-2",
   "org.webjars" % "bootstrap" % "3.1.1",
   "org.webjars" % "jquery" % "1.11.0",
   "net.codingwell" %% "scala-guice" % "4.0.1",
   "com.iheart" %% "ficus" % "1.2.6",
   "com.adrianhurt" %% "play-bootstrap" % "1.0-P25-B3",
-  "com.mohiva" %% "play-silhouette-testkit" % "4.0.0-RC1" % "test",
+  "com.mohiva" %% "play-silhouette-testkit" % "4.0.0" % "test",
   cache,
   filters
 )

@@ -322,6 +322,13 @@ module.exports = function (grunt) {
         cwd: '<%= yeoman.app %>/styles',
         dest: '.tmp/styles/',
         src: '{,*/}*.css'
+      },
+      // https://github.com/tuplejump/play-yeoman/issues/95
+      public: {
+        expand: true,
+        cwd: 'dist',
+        src: ['**'],
+        dest: '../public/'
       }
     },
 
@@ -418,7 +425,8 @@ module.exports = function (grunt) {
     'uglify',
     'rev',
     'usemin',
-    'htmlmin'
+    'htmlmin',
+    'copy:public'
   ]);
 
   grunt.registerTask('default', [
