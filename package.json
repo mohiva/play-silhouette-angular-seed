@@ -13,6 +13,6 @@
     "node": "5.10.x"
   },
   "scripts": {
-    "postinstall": "cd ui && npm install && bower install"
+    "postinstall": "cd ui && npm install && bower install && grunt build"
   }
 }
