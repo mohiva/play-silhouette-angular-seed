@@ -112,7 +112,7 @@ app.config(function ($urlRouterProvider, $stateProvider, $httpProvider, $authPro
 
   // Google
   $authProvider.google({
-    clientId: '526391676642-nbnoavs078shhti3ruk8jhl4nenv0g04.apps.googleusercontent.com',
+    clientId: '59871119325-klhe2p9b6h3451bc1fv1ie0lamdvot2m.apps.googleusercontent.com',
     url: '/authenticate/google',
     scope: ['profile', 'email'],
     scopePrefix: 'openid',
