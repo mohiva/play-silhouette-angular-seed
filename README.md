@@ -1,3 +1,6 @@
+This template is not maintained anymore. If you search for a way to combine a single page application with Play and Silhouette, then please have a look at the [Silhouette Play React Seed Template](https://github.com/setusoft/silhouette-play-react-seed).
+
+
 Play Silhouette Angular Seed Project
 =====================================
 
